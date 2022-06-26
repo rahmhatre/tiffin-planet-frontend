@@ -10,3 +10,23 @@ export const getAvatarInitials = (fullName: string) => {
   }
   return initials.join('');
 };
+
+export const ConstructUrlFromQueryParams = (queryParams: any) => {
+  if (Object.keys(queryParams).length) {
+    const url = `?${Object.keys(queryParams)
+      .map((key) => {
+        if (!queryParams[key]) return '';
+        return `${key}=${queryParams[key]}`;
+      })
+      .filter((e) => e)
+      .join('&')}`;
+    return url;
+  }
+  return '';
+};
+
+export const checkNullOrUndefined = (value: any) => value === null || value === undefined;
+
+export const changeNullToUndefined = (value?: string | null) => {
+  return checkNullOrUndefined(value?.toString()?.trim()) ? undefined : value?.toString()?.trim();
+};

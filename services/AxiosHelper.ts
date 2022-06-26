@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 
 export const ApiCall = (baseURL: string, headers?: any) => {
   const instance = axios.create({
@@ -11,7 +11,15 @@ export const ApiCall = (baseURL: string, headers?: any) => {
     (config: any) => config,
     (error: any) => {
       Promise.reject(error);
-    }
+    },
   );
   return instance;
+};
+
+export const TiffinPlanetAPI = () => {
+  // const headers = {
+  //   Authorization: `Bearer ${access_token}`,
+  // };
+  // TODO: Need to read this from ENV File
+  return ApiCall('https://staging-tiffin-planet-ws.herokuapp.com');
 };

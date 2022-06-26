@@ -7,3 +7,8 @@ export enum DateFormat {
   UK = 'DD/MM/YYYY',
   UK_TIME = 'hh:mm A DD/MM/YYYY',
 }
+
+export enum AuthMode {
+  GOOGLE = 'GOOGLE',
+  CLASSIC = 'CLASSIC',
+}

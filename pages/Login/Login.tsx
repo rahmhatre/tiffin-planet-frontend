@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Image, View } from 'react-native';
+import { StyleSheet, Image, View, ScrollView } from 'react-native';
 import { Button, Text } from 'react-native-paper';
 
 // Authentication
@@ -32,6 +32,10 @@ export default function Login({ navigation }: any) {
       setAccessToken(response?.authentication?.accessToken!);
       console.log('🚀 ~ file: Login.tsx ~ line 23 ~ useEffect ~ response', response);
 
+      // TODO: Check if the user already exists in the system
+
+      // TODO: If the user is not present then create one and navigate to Orders Page
+
       // Navigate the user to Orders Screen once he is signed up and authenticated
       navigation.navigate(routes.Orders);
     }
@@ -50,18 +54,19 @@ export default function Login({ navigation }: any) {
     getUserData();
   }, [accessToken]);
 
-  // Display Google Image
-  const showUserInfo = () => {
-    if (userInfo) {
-      return (
-        <View>
-          <Image style={styles.imageLogo} source={{ uri: userInfo?.picture }}></Image>
-          <Text variant="titleLarge">Welcome {userInfo?.name}</Text>
-          <Text variant="titleLarge">{userInfo?.email}</Text>
-        </View>
-      );
-    }
-  };
+  // TODO: Remove if not used
+  // // Display Google Image
+  // const showUserInfo = () => {
+  //   if (userInfo) {
+  //     return (
+  //       <View>
+  //         <Image style={styles.imageLogo} source={{ uri: userInfo?.picture }}></Image>
+  //         <Text variant="titleLarge">Welcome {userInfo?.name}</Text>
+  //         <Text variant="titleLarge">{userInfo?.email}</Text>
+  //       </View>
+  //     );
+  //   }
+  // };
 
   // Navigate to Registration Page
   const navigateToRegistrationPage = () => {
@@ -69,7 +74,7 @@ export default function Login({ navigation }: any) {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <View style={{ paddingBottom: 20 }}>
         <Image style={styles.companyLogo} source={require('./../../assets/tiffin_planet.png')} />
       </View>
@@ -78,7 +83,7 @@ export default function Login({ navigation }: any) {
       </View>
       <View style={{ paddingBottom: 20 }}>
         <Button
-          style={styles.buttonSize}
+          style={{ width: 230 }}
           icon="login"
           mode="contained"
           onPress={() => {
@@ -90,10 +95,13 @@ export default function Login({ navigation }: any) {
       </View>
       <View>
         <Button style={styles.buttonSize} mode="outlined" onPress={navigateToRegistrationPage}>
+          Sign In
+        </Button>
+        <Button style={styles.buttonSize} mode="outlined" onPress={navigateToRegistrationPage}>
           Sign Up
         </Button>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -112,6 +120,6 @@ const styles = StyleSheet.create({
     height: 150,
   },
   buttonSize: {
-    width: 230,
+    width: 200,
   },
 });
