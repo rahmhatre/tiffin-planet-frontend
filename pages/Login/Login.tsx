@@ -81,9 +81,9 @@ export default function Login({ navigation }: any) {
       <View style={{ paddingBottom: 20 }}>
         <Text>The easiest way to start engaging with Tiffin Planet</Text>
       </View>
-      <View style={{ paddingBottom: 20 }}>
+      <View style={{ paddingBottom: 10 }}>
         <Button
-          style={{ width: 230 }}
+          style={styles.buttonSize}
           icon="login"
           mode="contained"
           onPress={() => {
@@ -92,12 +92,13 @@ export default function Login({ navigation }: any) {
         >
           Login with Google
         </Button>
-      </View>
-      <View>
         <Button style={styles.buttonSize} mode="outlined" onPress={navigateToRegistrationPage}>
           Sign In
         </Button>
-        <Button style={styles.buttonSize} mode="outlined" onPress={navigateToRegistrationPage}>
+      </View>
+      <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignContent: 'center', width: '100%', alignItems: 'baseline' }}>
+        <Text>Dont have an account? </Text>
+        <Button mode="text" onPress={navigateToRegistrationPage}>
           Sign Up
         </Button>
       </View>
@@ -120,6 +121,6 @@ const styles = StyleSheet.create({
     height: 150,
   },
   buttonSize: {
-    width: 200,
+    width: 230,
   },
 });

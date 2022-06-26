@@ -72,7 +72,7 @@ export default function Register({ navigation }: any) {
       <View style={{ paddingBottom: 10 }}>
         <TextInput mode="outlined" label="Email" autoComplete="email" textContentType="emailAddress" onChangeText={setEmail} value={email} />
       </View>
-      <View style={{ paddingBottom: 10 }}>
+      <View style={{ paddingBottom: 30 }}>
         <TextInput
           mode="outlined"
           label="Password"
@@ -84,7 +84,7 @@ export default function Register({ navigation }: any) {
           value={password}
         />
       </View>
-      <View style={{ display: 'flex', justifyContent: 'center', width: '100%', flexDirection: 'column' }}>
+      <View style={{ display: 'flex', justifyContent: 'center', width: '100%', flexDirection: 'row' }}>
         <Button style={styles.buttonSize} mode="contained" disabled={disableSignUp} onPress={createUser}>
           Sign Up
         </Button>
