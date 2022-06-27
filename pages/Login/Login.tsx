@@ -9,7 +9,7 @@ import { LoginApi } from '../../services/LoginService';
 import { useDispatch } from 'react-redux';
 import { updateGoogleAccessToken } from '../../common/redux/authentication/googleAccessToken';
 import { updateLoggedInUserStateSlice } from '../../common/redux/loggedInUser/loggedInUserStateSlice';
-import { GoogleAuthStatus } from '../../common/Enums';
+import { GoogleAuthStatus, RegistrationPageType } from '../../common/Enums';
 import { routes } from '../../common/routes/routes';
 
 WebBrowser.maybeCompleteAuthSession();
@@ -69,8 +69,10 @@ export default function Login({ navigation }: any) {
   // };
 
   // Navigate to Registration Page
-  const navigateToRegistrationPage = () => {
-    navigation.navigate(routes.Register);
+  const navigateToRegistrationPage = (pageType: RegistrationPageType) => {
+    navigation.navigate(routes.Register, {
+      registrationPageType: pageType,
+    });
   };
 
   return (
@@ -92,13 +94,13 @@ export default function Login({ navigation }: any) {
         >
           Login with Google
         </Button>
-        <Button style={styles.buttonSize} mode="outlined" onPress={navigateToRegistrationPage}>
+        <Button style={styles.buttonSize} mode="outlined" onPress={() => navigateToRegistrationPage(RegistrationPageType.SIGN_IN)}>
           Sign In
         </Button>
       </View>
       <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignContent: 'center', width: '100%', alignItems: 'baseline' }}>
         <Text>Dont have an account? </Text>
-        <Button mode="text" onPress={navigateToRegistrationPage}>
+        <Button mode="text" onPress={() => navigateToRegistrationPage(RegistrationPageType.SIGN_UP)}>
           Sign Up
         </Button>
       </View>

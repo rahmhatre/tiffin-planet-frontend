@@ -2,23 +2,30 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Image, ScrollView } from 'react-native';
 import { Button, Snackbar, Text, TextInput } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
-import { AuthMode, UserType } from '../../common/Enums';
+import { AuthMode, RegistrationPageType, UserType } from '../../common/Enums';
 import { routes } from '../../common/routes/routes';
 import { changeNullToUndefined } from '../../common/utils/utils';
 import { UserService } from '../../services/UserService';
 
-export default function Register({ navigation }: any) {
+export default function Register({ route, navigation }: any) {
+  const { registrationPageType } = route.params;
   const dispatch = useDispatch();
   const [name, setName] = useState<string>();
   const [email, setEmail] = useState<string>();
   const [password, setPassword] = useState<string>();
   const [hidePassword, setHidePassword] = useState<boolean>(true);
-  const [disableSignUp, setDisableSignUp] = useState<boolean>(false);
+  const [disableSubmitBtn, setDisableSubmitBtn] = useState<boolean>(false);
 
   // Notification
   const [showNotification, setShowNotification] = useState<boolean>(false);
   const [notificationMessage, setNotificationMessage] = useState<string>();
   const onDismissSnackBar = () => setShowNotification(false);
+
+  useEffect(() => {
+    navigation.setOptions({
+      title: registrationPageType === RegistrationPageType.SIGN_UP ? 'Sign Up' : 'Sign In',
+    });
+  }, [registrationPageType]);
 
   // TODO:
   // Make notification component simple to show success and error notificaitons
@@ -27,14 +34,46 @@ export default function Register({ navigation }: any) {
     setShowNotification(true);
   };
 
+  const signUpOrSignInUser = async () => {
+    if (registrationPageType === RegistrationPageType.SIGN_UP) {
+      await createUser();
+    } else {
+      await signInUser();
+    }
+  };
+
+  const signInUser = async () => {
+    setDisableSubmitBtn(true);
+    console.log('🚀 ~ file: Register.tsx ~ line 10 ~ signInUser ~ name', name, email, password);
+
+    // Check for null values
+    if (!password || !email) {
+      displayNotification('All fields are mandatory to sign in.');
+      setDisableSubmitBtn(false);
+      return;
+    }
+
+    await UserService.loginUser(changeNullToUndefined(email)!, password)
+      .then((_response: any) => {
+        setDisableSubmitBtn(false);
+        displayNotification('Signed in successfully.');
+        // navigation.navigate(routes.Orders);
+      })
+      .catch((error: any) => {
+        setDisableSubmitBtn(false);
+        console.error('🚀 ~ file: Register.tsx ~ line 37 ~ signInUser ~ error', error);
+        displayNotification('Unable to sign in, please check the details again or contact support.');
+      });
+  };
+
   const createUser = async () => {
-    setDisableSignUp(true);
+    setDisableSubmitBtn(true);
     console.log('🚀 ~ file: Register.tsx ~ line 10 ~ Register ~ name', name, email, password);
 
     // Check for null values
     if (!name || !password || !email) {
       displayNotification('All fields are mandatory to register.');
-      setDisableSignUp(false);
+      setDisableSubmitBtn(false);
       return;
     }
 
@@ -49,12 +88,12 @@ export default function Register({ navigation }: any) {
 
     await UserService.postUser(userPayload)
       .then((_response: any) => {
-        setDisableSignUp(false);
+        setDisableSubmitBtn(false);
         displayNotification('Registered successfully.');
         // navigation.navigate(routes.Orders);
       })
       .catch((error: any) => {
-        setDisableSignUp(false);
+        setDisableSubmitBtn(false);
         console.error('🚀 ~ file: Register.tsx ~ line 37 ~ createUser ~ error', error);
         displayNotification('Unable to register, please check the details again or contact support.');
       });
@@ -66,9 +105,11 @@ export default function Register({ navigation }: any) {
         <Image style={styles.companyLogo} source={require('./../../assets/tiffin_planet.png')} />
       </View>
       {/* Name */}
-      <View style={{ paddingBottom: 10 }}>
-        <TextInput mode="outlined" label="Name" autoComplete="name" textContentType="name" onChangeText={setName} value={name} />
-      </View>
+      {registrationPageType === RegistrationPageType.SIGN_UP ? (
+        <View style={{ paddingBottom: 10 }}>
+          <TextInput mode="outlined" label="Name" autoComplete="name" textContentType="name" onChangeText={setName} value={name} />
+        </View>
+      ) : null}
       {/* Email */}
       <View style={{ paddingBottom: 10 }}>
         <TextInput mode="outlined" label="Email" autoComplete="email" textContentType="emailAddress" onChangeText={setEmail} value={email} />
@@ -86,8 +127,8 @@ export default function Register({ navigation }: any) {
         />
       </View>
       <View style={{ display: 'flex', justifyContent: 'center', width: '100%', flexDirection: 'row' }}>
-        <Button style={styles.buttonSize} mode="contained" disabled={disableSignUp} onPress={createUser}>
-          Sign Up
+        <Button style={styles.buttonSize} mode="contained" disabled={disableSubmitBtn} onPress={signUpOrSignInUser}>
+          {registrationPageType === RegistrationPageType.SIGN_UP ? 'Sign Up' : 'Sign In'}
         </Button>
       </View>
 

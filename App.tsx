@@ -22,7 +22,7 @@ function LoginAndRegistrationStack() {
   return (
     <LoginStack.Navigator initialRouteName={routes.Login}>
       <LoginStack.Screen name={routes.Login} options={{ title: '' }} component={Login} />
-      <LoginStack.Screen name={routes.Register} component={Register} />
+      <LoginStack.Screen name={routes.Register} options={{ title: '' }} component={Register} />
       <LoginStack.Screen name={routes.Orders} component={OrderSelection} />
     </LoginStack.Navigator>
   );

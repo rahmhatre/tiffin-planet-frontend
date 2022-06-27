@@ -18,3 +18,8 @@ export enum UserType {
   USER = 'USER',
   DEVELOPER = 'DEVELOPER',
 }
+
+export enum RegistrationPageType {
+  SIGN_IN = 'SIGN_IN',
+  SIGN_UP = 'SIGN_UP',
+}

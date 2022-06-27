@@ -9,8 +9,12 @@ async function getUsers(queryParams = {}) {
 }
 
 async function loginUser(email: string, password: string) {
-  const url = `${baseURL}/login?email=${email}&password=${password}`;
-  const { data } = await TiffinPlanetAPI().get(url);
+  const payload = {
+    email: email,
+    password: password,
+  };
+  const url = `${baseURL}/login`;
+  const { data } = await TiffinPlanetAPI().post(url, payload);
   return data;
 }
 
