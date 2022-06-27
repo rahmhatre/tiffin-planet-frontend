@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Image, ScrollView } from 'react-native';
 import { Button, Snackbar, Text, TextInput } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
-import { AuthMode } from '../../common/Enums';
+import { AuthMode, UserType } from '../../common/Enums';
 import { routes } from '../../common/routes/routes';
 import { changeNullToUndefined } from '../../common/utils/utils';
 import { UserService } from '../../services/UserService';
@@ -43,6 +43,7 @@ export default function Register({ navigation }: any) {
       name: changeNullToUndefined(name),
       email: changeNullToUndefined(email),
       authMode: AuthMode.CLASSIC,
+      userType: UserType.USER,
       password: password,
     };
 

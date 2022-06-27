@@ -12,3 +12,9 @@ export enum AuthMode {
   GOOGLE = 'GOOGLE',
   CLASSIC = 'CLASSIC',
 }
+
+export enum UserType {
+  ADMIN = 'ADMIN',
+  USER = 'USER',
+  DEVELOPER = 'DEVELOPER',
+}

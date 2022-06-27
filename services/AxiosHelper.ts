@@ -17,9 +17,9 @@ export const ApiCall = (baseURL: string, headers?: any) => {
 };
 
 export const TiffinPlanetAPI = () => {
-  // const headers = {
-  //   Authorization: `Bearer ${access_token}`,
-  // };
+  const headers = {
+    'Content-Type': 'application/json',
+  };
   // TODO: Need to read this from ENV File
-  return ApiCall('https://staging-tiffin-planet-ws.herokuapp.com');
+  return ApiCall('https://staging-tiffin-planet-ws.herokuapp.com', headers);
 };
