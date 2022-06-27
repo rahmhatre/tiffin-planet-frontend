@@ -8,6 +8,11 @@ async function getUsers(queryParams = {}) {
   return data;
 }
 
+async function postUser(userBody: any) {
+  const { data } = await TiffinPlanetAPI().post(baseURL, userBody);
+  return data;
+}
+
 async function loginUser(email: string, password: string) {
   const payload = {
     email: email,
@@ -18,8 +23,13 @@ async function loginUser(email: string, password: string) {
   return data;
 }
 
-async function postUser(userBody: any) {
-  const { data } = await TiffinPlanetAPI().post(baseURL, userBody);
+async function googleLogin(name: string, email: string) {
+  const payload = {
+    email: email,
+    name: name,
+  };
+  const url = `${baseURL}/googlelogin`;
+  const { data } = await TiffinPlanetAPI().post(url, payload);
   return data;
 }
 
@@ -34,4 +44,5 @@ export const UserService = {
   loginUser,
   postUser,
   getUserById,
+  googleLogin,
 };

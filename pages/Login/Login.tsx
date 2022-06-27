@@ -5,17 +5,18 @@ import { Button, Text } from 'react-native-paper';
 // Authentication
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
-import { LoginApi } from '../../services/LoginService';
+import { getMyGoogleInfoApi } from '../../services/GoogleService';
 import { useDispatch } from 'react-redux';
 import { updateGoogleAccessToken } from '../../common/redux/authentication/googleAccessToken';
-import { updateLoggedInUserStateSlice } from '../../common/redux/loggedInUser/loggedInUserStateSlice';
+import { updateGoogleLoggedInUserStateSlice } from '../../common/redux/googleLoggedInUserStateSlice/googleLoggedInUserStateSlice';
 import { GoogleAuthStatus, RegistrationPageType } from '../../common/Enums';
 import { routes } from '../../common/routes/routes';
+import { UserService } from '../../services/UserService';
 
 WebBrowser.maybeCompleteAuthSession();
 
 export default function Login({ navigation }: any) {
-  const [accessToken, setAccessToken] = useState<string>('');
+  const [accessToken, setAccessToken] = useState<string>();
   const [userInfo, setUserInfo] = useState<any>();
   const dispatch = useDispatch();
 
@@ -26,32 +27,45 @@ export default function Login({ navigation }: any) {
     androidClientId: '803273470355-odb3go70h65e4cqab8rifec63ufe9ki9.apps.googleusercontent.com',
   });
 
+  // When google returns the callback response
+  // Check for the response type and update the redux state
   useEffect(() => {
     if (response?.type === GoogleAuthStatus.success) {
       dispatch(updateGoogleAccessToken(response));
       setAccessToken(response?.authentication?.accessToken!);
-      console.log('🚀 ~ file: Login.tsx ~ line 23 ~ useEffect ~ response', response);
-
-      // TODO: Check if the user already exists in the system
-
-      // TODO: If the user is not present then create one and navigate to Orders Page
-
-      // Navigate the user to Orders Screen once he is signed up and authenticated
-      navigation.navigate(routes.Orders);
     }
   }, [response]);
 
+  // Fetch the user info from google by the fetched access token
   useEffect(() => {
-    const getUserData = async () => {
+    const loginWithGoogleUserInfo = async () => {
       if (accessToken) {
-        await LoginApi(accessToken).then((response: any) => {
-          console.log('🚀 ~ file: Login.tsx ~ line 45 ~ userInfo ~ response', response);
-          dispatch(updateLoggedInUserStateSlice(response));
-          setUserInfo(response);
+        // Get info from google
+        const googleInfoResponse = await getMyGoogleInfoApi(accessToken).catch((error: any) => {
+          console.log('🚀 ~ file: Login.tsx ~ line 59 ~ getUserData ~ error', error);
         });
+
+        // if google we get the google response
+        if (googleInfoResponse) {
+          // Save the google response in the store
+          // TODO: this has user image which can be displayed in Avatar in future
+          dispatch(updateGoogleLoggedInUserStateSlice(googleInfoResponse));
+          setUserInfo(googleInfoResponse);
+
+          // Login with Google Info
+          await UserService.googleLogin(googleInfoResponse?.name, googleInfoResponse?.email)
+            .then((_response: any) => {
+              console.log('🚀 ~ file: Login.tsx ~ line 49 ~ .then ~ _response', _response);
+              // On success navigate to orders screen
+              navigation.navigate(routes.Orders);
+            })
+            .catch((error: any) => {
+              console.error('🚀 ~ file: Register.tsx ~ line 37 ~ signInUser ~ error', error);
+            });
+        }
       }
     };
-    getUserData();
+    loginWithGoogleUserInfo();
   }, [accessToken]);
 
   // TODO: Remove if not used
@@ -68,7 +82,7 @@ export default function Login({ navigation }: any) {
   //   }
   // };
 
-  // Navigate to Registration Page
+  // Navigate to Registration Page for Manual Sign in and Sign up flow
   const navigateToRegistrationPage = (pageType: RegistrationPageType) => {
     navigation.navigate(routes.Register, {
       registrationPageType: pageType,

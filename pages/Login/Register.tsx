@@ -57,7 +57,7 @@ export default function Register({ route, navigation }: any) {
       .then((_response: any) => {
         setDisableSubmitBtn(false);
         displayNotification('Signed in successfully.');
-        // navigation.navigate(routes.Orders);
+        navigation.navigate(routes.Orders);
       })
       .catch((error: any) => {
         setDisableSubmitBtn(false);
@@ -90,7 +90,7 @@ export default function Register({ route, navigation }: any) {
       .then((_response: any) => {
         setDisableSubmitBtn(false);
         displayNotification('Registered successfully.');
-        // navigation.navigate(routes.Orders);
+        navigation.navigate(routes.Orders);
       })
       .catch((error: any) => {
         setDisableSubmitBtn(false);

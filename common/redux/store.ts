@@ -1,11 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import googleAccessTokenReducer from './authentication/googleAccessToken';
-import loggedInUserStateReducer from './loggedInUser/loggedInUserStateSlice';
+import googleLoggedInUserStateReducer from './googleLoggedInUserStateSlice/googleLoggedInUserStateSlice';
 
 export default configureStore({
   reducer: {
     GoogleAccessToken: googleAccessTokenReducer,
-    LoggedInUserState: loggedInUserStateReducer,
+    GoogleLoggedInUserState: googleLoggedInUserStateReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }),
 });
