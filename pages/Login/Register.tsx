@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { AuthMode, RegistrationPageType, UserType } from '../../common/Enums';
 import { routes } from '../../common/routes/routes';
 import { changeNullToUndefined } from '../../common/utils/utils';
-import { UserService } from '../../services/UserService';
+import { RegisterService } from '../../services/RegisterService';
 
 export default function Register({ route, navigation }: any) {
   const { registrationPageType } = route.params;
@@ -53,7 +53,7 @@ export default function Register({ route, navigation }: any) {
       return;
     }
 
-    await UserService.loginUser(changeNullToUndefined(email)!, password)
+    await RegisterService.loginUser(changeNullToUndefined(email)!, password)
       .then((_response: any) => {
         setDisableSubmitBtn(false);
         displayNotification('Signed in successfully.');
@@ -81,12 +81,11 @@ export default function Register({ route, navigation }: any) {
     const userPayload = {
       name: changeNullToUndefined(name),
       email: changeNullToUndefined(email),
-      authMode: AuthMode.CLASSIC,
       userType: UserType.USER,
       password: password,
     };
 
-    await UserService.postUser(userPayload)
+    await RegisterService.registerUser(userPayload)
       .then((_response: any) => {
         setDisableSubmitBtn(false);
         displayNotification('Registered successfully.');

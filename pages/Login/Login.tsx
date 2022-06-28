@@ -11,12 +11,12 @@ import { updateGoogleAccessToken } from '../../common/redux/authentication/googl
 import { updateGoogleLoggedInUserStateSlice } from '../../common/redux/googleLoggedInUserStateSlice/googleLoggedInUserStateSlice';
 import { GoogleAuthStatus, RegistrationPageType } from '../../common/Enums';
 import { routes } from '../../common/routes/routes';
-import { UserService } from '../../services/UserService';
+import { RegisterService } from '../../services/RegisterService';
 
 WebBrowser.maybeCompleteAuthSession();
 
 export default function Login({ navigation }: any) {
-  const [accessToken, setAccessToken] = useState<string>();
+  const [googleAccessToken, setGoogleAccessToken] = useState<string>();
   const [userInfo, setUserInfo] = useState<any>();
   const dispatch = useDispatch();
 
@@ -32,20 +32,20 @@ export default function Login({ navigation }: any) {
   useEffect(() => {
     if (response?.type === GoogleAuthStatus.success) {
       dispatch(updateGoogleAccessToken(response));
-      setAccessToken(response?.authentication?.accessToken!);
+      setGoogleAccessToken(response?.authentication?.accessToken!);
     }
   }, [response]);
 
   // Fetch the user info from google by the fetched access token
   useEffect(() => {
     const loginWithGoogleUserInfo = async () => {
-      if (accessToken) {
+      if (googleAccessToken) {
         // Get info from google
-        const googleInfoResponse = await getMyGoogleInfoApi(accessToken).catch((error: any) => {
+        const googleInfoResponse = await getMyGoogleInfoApi(googleAccessToken).catch((error: any) => {
           console.log('🚀 ~ file: Login.tsx ~ line 59 ~ getUserData ~ error', error);
         });
 
-        // if google we get the google response
+        // if we get a response from google
         if (googleInfoResponse) {
           // Save the google response in the store
           // TODO: this has user image which can be displayed in Avatar in future
@@ -53,9 +53,10 @@ export default function Login({ navigation }: any) {
           setUserInfo(googleInfoResponse);
 
           // Login with Google Info
-          await UserService.googleLogin(googleInfoResponse?.name, googleInfoResponse?.email)
+          await RegisterService.googleLogin(googleInfoResponse?.name, googleInfoResponse?.email)
             .then((_response: any) => {
               console.log('🚀 ~ file: Login.tsx ~ line 49 ~ .then ~ _response', _response);
+              // TODO: on success you will get an accesstoken and should be sent with all following requests
               // On success navigate to orders screen
               navigation.navigate(routes.Orders);
             })
@@ -66,7 +67,7 @@ export default function Login({ navigation }: any) {
       }
     };
     loginWithGoogleUserInfo();
-  }, [accessToken]);
+  }, [googleAccessToken]);
 
   // TODO: Remove if not used
   // // Display Google Image
