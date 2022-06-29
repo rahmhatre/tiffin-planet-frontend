@@ -19,7 +19,7 @@ const LoginStack = createNativeStackNavigator();
 function LoginAndRegistrationStack() {
   return (
     // TODO: initial route is Orders for Dev change to original Login
-    <LoginStack.Navigator initialRouteName={routes.Orders}>
+    <LoginStack.Navigator initialRouteName={routes.Login}>
       <LoginStack.Screen name={routes.Login} options={{ title: '' }} component={Login} />
       <LoginStack.Screen name={routes.Register} options={{ title: '' }} component={Register} />
       <LoginStack.Screen name={routes.Orders} component={OrderSelection} />
