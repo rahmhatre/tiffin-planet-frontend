@@ -7,34 +7,24 @@ import moment from 'moment';
 
 const OrderSelection = () => {
   const [minimumDate, setMinimumDate] = useState<Date>();
-  const [maximumDate] = useState<Date>(moment().month(1).toDate());
   const [date, setDate] = useState<Date>();
-  const [toggle, setToggle] = useState<boolean>(false);
+  // const [maximumDate] = useState<Date>(moment().month(1).toDate());
 
   // Set date
   const onDateChange = (date: any) => {
     setDate(moment(date).toDate());
   };
 
-  // Toggle tiffin setting
-  const toggleChange = () => {
-    setToggle((prevState) => !prevState);
-  };
-
   // Confirm if you want tiffin or not
   const submitButtonPress = () => {
-    if (!toggle) {
-      Alert.alert(`Please toggle the switch for confirming your unavailibility for the selected date ${moment(date).format(DateFormat.UK)}`);
-    } else {
-      Alert.alert(`Tiffin will ${toggle ? 'not ' : ''}be provided on ${moment(date).format(DateFormat.UK)}`, 'Do you wish to confirm?', [
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-        { text: 'OK', onPress: () => console.log('OK Pressed') },
-      ]);
-    }
+    Alert.alert(`Tiffin will not be provided on ${moment(date).format(DateFormat.UK)}`, 'Do you wish to confirm?', [
+      {
+        text: 'Cancel',
+        onPress: () => console.log('Cancel Pressed'),
+        style: 'cancel',
+      },
+      { text: 'OK', onPress: () => console.log('OK Pressed') },
+    ]);
     // TODO: API Call to collect this data
   };
 
@@ -82,10 +72,6 @@ const OrderSelection = () => {
           />
         ) : null}
       </View>
-      {/* <View>
-        <Text style={styles.doNotWantTitle}>Please toggle to confirm cancellation</Text>
-        <Switch trackColor={{ false: '#767577', true: '#b01105' }} ios_backgroundColor="#3e3e3e" onValueChange={toggleChange} value={toggle} />
-      </View> */}
       <View style={styles.submitButton}>
         <Button style={styles.buttonSize} icon="login" mode="contained" onPress={submitButtonPress}>
           Submit
