@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Image, ScrollView } from 'react-native';
+import { View, StyleSheet, Image, ScrollView, Alert } from 'react-native';
 import { Button, Snackbar, Text, TextInput } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { AuthMode, RegistrationPageType, UserType } from '../../common/Enums';
@@ -9,6 +9,7 @@ import { RegisterService } from '../../services/RegisterService';
 
 export default function Register({ route, navigation }: any) {
   const { registrationPageType } = route.params;
+  // TODO: store the logged in user in the store
   const dispatch = useDispatch();
   const [name, setName] = useState<string>();
   const [email, setEmail] = useState<string>();
@@ -16,23 +17,11 @@ export default function Register({ route, navigation }: any) {
   const [hidePassword, setHidePassword] = useState<boolean>(true);
   const [disableSubmitBtn, setDisableSubmitBtn] = useState<boolean>(false);
 
-  // Notification
-  const [showNotification, setShowNotification] = useState<boolean>(false);
-  const [notificationMessage, setNotificationMessage] = useState<string>();
-  const onDismissSnackBar = () => setShowNotification(false);
-
   useEffect(() => {
     navigation.setOptions({
       title: registrationPageType === RegistrationPageType.SIGN_UP ? 'Sign Up' : 'Sign In',
     });
   }, [registrationPageType]);
-
-  // TODO:
-  // Make notification component simple to show success and error notificaitons
-  const displayNotification = (message: string) => {
-    setNotificationMessage(message);
-    setShowNotification(true);
-  };
 
   const signUpOrSignInUser = async () => {
     if (registrationPageType === RegistrationPageType.SIGN_UP) {
@@ -48,7 +37,7 @@ export default function Register({ route, navigation }: any) {
 
     // Check for null values
     if (!password || !email) {
-      displayNotification('All fields are mandatory to sign in.');
+      Alert.alert(`All fields are mandatory to sign in.`);
       setDisableSubmitBtn(false);
       return;
     }
@@ -56,13 +45,13 @@ export default function Register({ route, navigation }: any) {
     await RegisterService.loginUser(changeNullToUndefined(email)!, password)
       .then((_response: any) => {
         setDisableSubmitBtn(false);
-        displayNotification('Signed in successfully.');
+        Alert.alert(`Signed in successfully.`);
         navigation.navigate(routes.Orders);
       })
       .catch((error: any) => {
         setDisableSubmitBtn(false);
         console.error('🚀 ~ file: Register.tsx ~ line 37 ~ signInUser ~ error', error);
-        displayNotification('Unable to sign in, please check the details again or contact support.');
+        Alert.alert(`Unable to sign in, please check the details again or contact support.`);
       });
   };
 
@@ -72,7 +61,7 @@ export default function Register({ route, navigation }: any) {
 
     // Check for null values
     if (!name || !password || !email) {
-      displayNotification('All fields are mandatory to register.');
+      Alert.alert(`All fields are mandatory to register.`);
       setDisableSubmitBtn(false);
       return;
     }
@@ -88,13 +77,13 @@ export default function Register({ route, navigation }: any) {
     await RegisterService.registerUser(userPayload)
       .then((_response: any) => {
         setDisableSubmitBtn(false);
-        displayNotification('Registered successfully.');
+        Alert.alert(`Registered successfully.`);
         navigation.navigate(routes.Orders);
       })
       .catch((error: any) => {
         setDisableSubmitBtn(false);
         console.error('🚀 ~ file: Register.tsx ~ line 37 ~ createUser ~ error', error);
-        displayNotification('Unable to register, please check the details again or contact support.');
+        Alert.alert(`Unable to register, please check the details again or contact support.`);
       });
   };
 
@@ -125,26 +114,11 @@ export default function Register({ route, navigation }: any) {
           value={password}
         />
       </View>
-      <View style={{ display: 'flex', justifyContent: 'center', width: '100%', flexDirection: 'row' }}>
+      <View style={styles.signUpButtons}>
         <Button style={styles.buttonSize} mode="contained" disabled={disableSubmitBtn} onPress={signUpOrSignInUser}>
           {registrationPageType === RegistrationPageType.SIGN_UP ? 'Sign Up' : 'Sign In'}
         </Button>
       </View>
-
-      {/* Notification on success or failure */}
-      <Snackbar
-        style={styles.snackbar}
-        visible={showNotification}
-        onDismiss={onDismissSnackBar}
-        action={{
-          icon: 'close',
-          onPress: () => {
-            // Do something
-          },
-        }}
-      >
-        {notificationMessage}
-      </Snackbar>
     </ScrollView>
   );
 }
@@ -174,13 +148,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
   },
-  snackbar: {
-    width: '100%',
-    height: 50,
-    backgroundColor: '#EE5407',
+  signUpButtons: {
+    display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute', //Here is the trick
-    bottom: 0, //Here is the trick
+    width: '100%',
+    flexDirection: 'row',
   },
 });

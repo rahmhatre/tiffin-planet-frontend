@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import * as LocalAuthentication from 'expo-local-authentication';
-import { Button, StyleSheet, Text, View } from 'react-native';
-import OrderSelection from './pages/OrderSelection';
 import Login from './pages/Login/Login';
-import { StatusBar } from 'expo-status-bar';
+import OrderSelection from './pages/Orders/OrderSelection';
 import { Provider as PaperProvider, DarkTheme, DefaultTheme } from 'react-native-paper';
 import { Provider } from 'react-redux';
 import store from './common/redux/store';
@@ -20,7 +18,8 @@ const LoginStack = createNativeStackNavigator();
 
 function LoginAndRegistrationStack() {
   return (
-    <LoginStack.Navigator initialRouteName={routes.Login}>
+    // TODO: initial route is Orders for Dev change to original Login
+    <LoginStack.Navigator initialRouteName={routes.Orders}>
       <LoginStack.Screen name={routes.Login} options={{ title: '' }} component={Login} />
       <LoginStack.Screen name={routes.Register} options={{ title: '' }} component={Register} />
       <LoginStack.Screen name={routes.Orders} component={OrderSelection} />
