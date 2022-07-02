@@ -13,6 +13,17 @@ export const ApiCall = (baseURL: string, headers?: any) => {
       Promise.reject(error);
     },
   );
+  instance.interceptors.response.use(
+    (response) => {
+      if (response?.headers?.authorization) {
+        console.log('🚀 ~ file: AxiosHelper.ts ~ line 20 ~ ApiCall ~ response', response?.headers?.authorization);
+      }
+      return response;
+    },
+    (error) => {
+      return Promise.reject(error);
+    },
+  );
   return instance;
 };
 
