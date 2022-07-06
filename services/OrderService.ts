@@ -1,9 +1,10 @@
 import { ConstructUrlFromQueryParams } from '../common/utils/utils';
-import { TiffinPlanetAPI } from './AxiosHelper';
+import { getAuthTokenAsHeader, TiffinPlanetAPI } from './AxiosHelper';
 const baseURL = '/api/orders';
 
 async function postOrder(userBody: any) {
-  const { data } = await TiffinPlanetAPI().post(baseURL, userBody);
+  const authHeader = await getAuthTokenAsHeader();
+  const { data } = await TiffinPlanetAPI(authHeader).post(baseURL, userBody);
   return data;
 }
 

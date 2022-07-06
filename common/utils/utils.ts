@@ -30,3 +30,16 @@ export const checkNullOrUndefined = (value: any) => value === null || value === 
 export const changeNullToUndefined = (value?: string | null) => {
   return checkNullOrUndefined(value?.toString()?.trim()) ? undefined : value?.toString()?.trim();
 };
+
+export function toPascalCase(text?: string | null) {
+  if (!text) return '';
+  const words = text?.toLowerCase().split(' ');
+  const finalWord = words?.map((word) => {
+    if (word === 'on' || word === 'of' || word === 'from') {
+      return word;
+    }
+    return word.charAt(0).toUpperCase() + word.slice(1);
+  });
+
+  return finalWord?.join(' ');
+}

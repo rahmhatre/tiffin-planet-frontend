@@ -1,4 +1,6 @@
 import axios from 'axios';
+import * as SecureStore from 'expo-secure-store';
+import { Authentication } from '../common/Enums';
 
 export const ApiCall = (baseURL: string, headers?: any) => {
   const instance = axios.create({
@@ -8,15 +10,17 @@ export const ApiCall = (baseURL: string, headers?: any) => {
     },
   });
   instance.interceptors.request.use(
-    (config: any) => config,
+    (config: any) => {
+      return config;
+    },
     (error: any) => {
       Promise.reject(error);
     },
   );
   instance.interceptors.response.use(
-    (response) => {
+    async (response) => {
       if (response?.headers?.authorization) {
-        console.log('🚀 ~ file: AxiosHelper.ts ~ line 20 ~ ApiCall ~ response', response?.headers?.authorization);
+        await secureStorageSave(Authentication.Authorization, response?.headers?.authorization);
       }
       return response;
     },
@@ -27,10 +31,31 @@ export const ApiCall = (baseURL: string, headers?: any) => {
   return instance;
 };
 
-export const TiffinPlanetAPI = () => {
+export const TiffinPlanetAPI = (additionalHeaders?: any) => {
   const headers = {
+    ...additionalHeaders,
     'Content-Type': 'application/json',
   };
   // TODO: Need to read this from ENV File
   return ApiCall('https://staging-tiffin-planet-ws.herokuapp.com', headers);
+};
+
+export const secureStorageSave = async (key: string, value: string) => {
+  await SecureStore.setItemAsync(key, value);
+};
+
+export const getValueFromSecureStorage = async (key: string) => {
+  let result = await SecureStore.getItemAsync(key);
+  if (result) {
+    return result;
+  } else {
+    alert('Unable to find access token, please relogin again.');
+  }
+};
+
+export const getAuthTokenAsHeader = async () => {
+  const accessToken = await getValueFromSecureStorage(Authentication.Authorization);
+  return {
+    authorization: `Bearer ${accessToken}`,
+  };
 };

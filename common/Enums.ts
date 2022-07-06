@@ -1,3 +1,7 @@
+export enum Authentication {
+  Authorization = 'Authorization',
+}
+
 export enum GoogleAuthStatus {
   success = 'success',
   error = 'error',
@@ -22,4 +26,13 @@ export enum UserType {
 export enum RegistrationPageType {
   SIGN_IN = 'SIGN_IN',
   SIGN_UP = 'SIGN_UP',
+}
+
+export enum OrderStatus {
+  PROCESSING = 'PROCESSING',
+  DELIVERED = 'DELIVERED',
+  CANCELLED = 'CANCELLED',
+  TRANSIT = 'TRANSIT',
+  PAYMENTDUE = 'PAYMENTDUE',
+  PROBLEM = 'PROBLEM',
 }

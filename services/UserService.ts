@@ -1,5 +1,5 @@
 import { ConstructUrlFromQueryParams } from '../common/utils/utils';
-import { TiffinPlanetAPI } from './AxiosHelper';
+import { getAuthTokenAsHeader, TiffinPlanetAPI } from './AxiosHelper';
 const baseURL = '/api/users';
 
 async function getUsers(queryParams = {}) {
@@ -9,8 +9,9 @@ async function getUsers(queryParams = {}) {
 }
 
 async function getUserById(userId: string) {
+  const authHeader = await getAuthTokenAsHeader();
   const url = `${baseURL}/${userId}`;
-  const { data } = await TiffinPlanetAPI().get(url);
+  const { data } = await TiffinPlanetAPI(authHeader).get(url);
   return data;
 }
 

@@ -1,2 +1,3 @@
-export const loginStateSelector = (state: any) => state?.LoginState?.value;
-export const googleLoggedInUserStateSelector = (state: any) => state?.GoogleLoggedInUserState?.value;
+export const GoogleAccessTokenSelector = (state: any) => state?.GoogleAccessToken?.value;
+export const GoogleLoggedInUserStateSelector = (state: any) => state?.GoogleLoggedInUserState?.value;
+export const TiffinPlanetLoggedInUserStateSelector = (state: any) => state?.TiffinPlanetLoggedInUserState?.value;

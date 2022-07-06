@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, Switch, View, Text } from 'react-native';
 import { Button } from 'react-native-paper';
-import { DateFormat } from '../../common/Enums';
+import { DateFormat, OrderStatus } from '../../common/Enums';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment';
+import { OrderService } from '../../services/OrderService';
+import { useSelector } from 'react-redux';
+import { TiffinPlanetLoggedInUserStateSelector } from '../../common/redux/selectors';
+import { TiffinPlanetUserSchema } from '../../common/Types';
 
 const OrderSelection = () => {
   const [minimumDate, setMinimumDate] = useState<Date>();
   const [date, setDate] = useState<Date>();
-  // const [maximumDate] = useState<Date>(moment().month(1).toDate());
+  const tiffinPlanetLoggedInUser: TiffinPlanetUserSchema = useSelector(TiffinPlanetLoggedInUserStateSelector);
 
   // Set date
   const onDateChange = (date: any) => {
@@ -23,9 +27,30 @@ const OrderSelection = () => {
         onPress: () => console.log('Cancel Pressed'),
         style: 'cancel',
       },
-      { text: 'OK', onPress: () => console.log('OK Pressed') },
+      {
+        text: 'OK',
+        onPress: () => {
+          postOrder();
+        },
+      },
     ]);
-    // TODO: API Call to collect this data
+  };
+
+  const postOrder = async () => {
+    const orderPayload = {
+      userId: tiffinPlanetLoggedInUser?._id,
+      orderShipmentDate: date,
+      status: OrderStatus.CANCELLED,
+    };
+
+    await OrderService.postOrder(orderPayload)
+      .then((_response: any) => {
+        Alert.alert(`Order successfully ${orderPayload.status?.toLowerCase()}.`);
+      })
+      .catch((error: any) => {
+        console.error('🚀 ~ file: OrderSelection.tsx ~ line 50 ~ postOrder ~ error', error);
+        Alert.alert(`Unable to update the order, please check the details again or contact support.`);
+      });
   };
 
   // Set the minimum date of the date picker

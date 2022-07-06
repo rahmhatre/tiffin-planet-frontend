@@ -9,9 +9,14 @@ import { getMyGoogleInfoApi } from '../../services/GoogleService';
 import { useDispatch } from 'react-redux';
 import { updateGoogleAccessToken } from '../../common/redux/authentication/googleAccessToken';
 import { updateGoogleLoggedInUserStateSlice } from '../../common/redux/googleLoggedInUserStateSlice/googleLoggedInUserStateSlice';
-import { GoogleAuthStatus, RegistrationPageType } from '../../common/Enums';
+import { Authentication, GoogleAuthStatus, RegistrationPageType } from '../../common/Enums';
 import { routes } from '../../common/routes/routes';
 import { RegisterService } from '../../services/RegisterService';
+import { getValueFromSecureStorage } from '../../services/AxiosHelper';
+import jwtDecode from 'jwt-decode';
+import { TiffinPlanetAccessToken, TiffinPlanetUserSchema } from '../../common/Types';
+import { UserService } from '../../services/UserService';
+import { updateTiffinPlanetLoggedInUserState } from '../../common/redux/tiffinPlanetUser/tiffinPlanetLoggedInUserStateSlice';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -47,22 +52,31 @@ export default function Login({ navigation }: any) {
 
         // if we get a response from google
         if (googleInfoResponse) {
+          // console.log('🚀 ~ file: Login.tsx ~ line 50 ~ loginWithGoogleUserInfo ~ googleInfoResponse', googleInfoResponse);
           // Save the google response in the store
           // TODO: this has user image which can be displayed in Avatar in future
-          dispatch(updateGoogleLoggedInUserStateSlice(googleInfoResponse));
-          setUserInfo(googleInfoResponse);
+          // dispatch(updateGoogleLoggedInUserStateSlice(googleInfoResponse));
+          // setUserInfo(googleInfoResponse);
 
-          // Login with Google Info
-          await RegisterService.googleLogin(googleInfoResponse?.name, googleInfoResponse?.email)
-            .then((_response: any) => {
-              console.log('🚀 ~ file: Login.tsx ~ line 49 ~ .then ~ _response', _response);
-              // TODO: on success you will get an accesstoken and should be sent with all following requests
-              // On success navigate to orders screen
-              navigation.navigate(routes.Orders);
-            })
-            .catch((error: any) => {
-              console.error('🚀 ~ file: Register.tsx ~ line 37 ~ signInUser ~ error', error);
-            });
+          try {
+            // Login with Google Info
+            await RegisterService.googleLogin(googleInfoResponse?.name, googleInfoResponse?.email);
+
+            // Fetch access token from Secure Storage
+            const accessToken = await getValueFromSecureStorage(Authentication.Authorization);
+
+            // Decode the JWT token
+            var decodedToken: TiffinPlanetAccessToken = jwtDecode(accessToken!);
+
+            // Get logged In user by Id
+            const userResponse: TiffinPlanetUserSchema = await UserService.getUserById(decodedToken?.userId);
+
+            // Dispatch user context to redux and navigate user to respective screen
+            dispatch(updateTiffinPlanetLoggedInUserState(userResponse));
+            navigation.navigate(routes.Orders);
+          } catch (error: any) {
+            console.error('🚀 ~ file: Login.tsx ~ line 78 ~ loginWithGoogleUserInfo ~ error', error);
+          }
         }
       }
     };

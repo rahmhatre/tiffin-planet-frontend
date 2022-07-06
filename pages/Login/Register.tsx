@@ -1,11 +1,16 @@
+import jwtDecode from 'jwt-decode';
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Image, ScrollView, Alert } from 'react-native';
 import { Button, Snackbar, Text, TextInput } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
-import { AuthMode, RegistrationPageType, UserType } from '../../common/Enums';
+import { Authentication, RegistrationPageType, UserType } from '../../common/Enums';
+import { updateTiffinPlanetLoggedInUserState } from '../../common/redux/tiffinPlanetUser/tiffinPlanetLoggedInUserStateSlice';
 import { routes } from '../../common/routes/routes';
+import { TiffinPlanetAccessToken, TiffinPlanetUserSchema } from '../../common/Types';
 import { changeNullToUndefined } from '../../common/utils/utils';
+import { getValueFromSecureStorage } from '../../services/AxiosHelper';
 import { RegisterService } from '../../services/RegisterService';
+import { UserService } from '../../services/UserService';
 
 export default function Register({ route, navigation }: any) {
   const { registrationPageType } = route.params;
@@ -42,17 +47,30 @@ export default function Register({ route, navigation }: any) {
       return;
     }
 
-    await RegisterService.loginUser(changeNullToUndefined(email)!, password)
-      .then((_response: any) => {
-        setDisableSubmitBtn(false);
-        Alert.alert(`Signed in successfully.`);
-        navigation.navigate(routes.Orders);
-      })
-      .catch((error: any) => {
-        setDisableSubmitBtn(false);
-        console.error('🚀 ~ file: Register.tsx ~ line 37 ~ signInUser ~ error', error);
-        Alert.alert(`Unable to sign in, please check the details again or contact support.`);
-      });
+    try {
+      // Login with User Credential Flow
+      await RegisterService.loginUser(changeNullToUndefined(email)!, password);
+      setDisableSubmitBtn(false);
+
+      // Fetch access token from Secure Storage
+      const accessToken = await getValueFromSecureStorage(Authentication.Authorization);
+
+      // Decode the JWT token
+      var decodedToken: TiffinPlanetAccessToken = jwtDecode(accessToken!);
+
+      // Get logged In user by Id
+      const userResponse: TiffinPlanetUserSchema = await UserService.getUserById(decodedToken?.userId);
+
+      // Dispatch user context to redux and navigate user to respective screen
+      dispatch(updateTiffinPlanetLoggedInUserState(userResponse));
+
+      Alert.alert(`Signed in successfully.`);
+      navigation.navigate(routes.Orders);
+    } catch (error: any) {
+      setDisableSubmitBtn(false);
+      console.error('🚀 ~ file: Register.tsx ~ line 37 ~ signInUser ~ error', error);
+      Alert.alert(`Unable to sign in, please check the details again or contact support.`);
+    }
   };
 
   const createUser = async () => {
