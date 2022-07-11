@@ -8,14 +8,13 @@ import { TiffinPlanetLoggedInUserStateSelector } from '../../common/redux/select
 import { TiffinPlanetOrderSchema, TiffinPlanetUserSchema } from '../../common/Types';
 import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
 import { MarkingProps } from 'react-native-calendars/src/calendar/day/marking';
-import moment, { isDate } from 'moment';
-import { toPascalCase } from '../../common/utils/utils';
+import moment from 'moment';
 
 const OrderSelection = () => {
-  const [minimumDate, setMinimumDate] = useState<Date>();
-  const [selectedDate, setSelectedDate] = useState<Date>();
-  const [allMyUpdatedOrders, setAllMyUpdatedOrders] = useState<TiffinPlanetOrderSchema[]>(); // Database schema which is stored in DB
+  const [minimumDate, setMinimumDate] = useState<string>(); // DateFormat.ISO8601 - YYYY-MM-DD
+  const [selectedDate, setSelectedDate] = useState<string>(); // DateFormat.ISO8601 - YYYY-MM-DD
   const [selectedDateOrderExist, setSelectedDateOrderExist] = useState<TiffinPlanetOrderSchema | undefined>(undefined);
+  const [allMyUpdatedOrders, setAllMyUpdatedOrders] = useState<TiffinPlanetOrderSchema[]>(); // Database schema which is stored in DB
   const [markedDates, setMarkedDates] = useState<Record<string, MarkingProps>>();
   const tiffinPlanetLoggedInUser: TiffinPlanetUserSchema = useSelector(TiffinPlanetLoggedInUserStateSelector);
 
@@ -33,15 +32,13 @@ const OrderSelection = () => {
   }, [selectedDate, markedDates]);
 
   // Set date
-  const onDateSelection = (date: any) => {
-    const selectedDate = moment(date).toDate();
-
+  const onDateSelection = (date: string) => {
     // Check if we already have a cancelled order for the selected date.
-    const dateFound = allMyUpdatedOrders?.find((order: TiffinPlanetOrderSchema) => moment(order?.orderShipmentDate).format(DateFormat.UK) === moment(selectedDate).format(DateFormat.UK));
+    const dateFound = allMyUpdatedOrders?.find((order: TiffinPlanetOrderSchema) => moment(order?.orderShipmentDate).format(DateFormat.UK) === moment(date).format(DateFormat.UK));
     setSelectedDateOrderExist(dateFound);
 
     // Set the selected date
-    setSelectedDate(selectedDate);
+    setSelectedDate(date);
   };
 
   // Build the marked dates array from the users cancelled orders
@@ -61,33 +58,46 @@ const OrderSelection = () => {
 
   // Confirm if you want tiffin or not
   const submitButtonPress = () => {
-    Alert.alert(`Tiffin will not be provided on ${moment(selectedDate).format(DateFormat.UK)}`, 'Do you wish to confirm?', [
+    Alert.alert(`Tiffin will ${selectedDateOrderExist?.status !== OrderStatus.CANCELLED ? 'not' : ''} be provided on ${moment(selectedDate).format(DateFormat.UK)}`, 'Do you wish to confirm?', [
       {
         text: 'Cancel',
-        onPress: () => console.log('Cancel Pressed'),
+        // onPress: () => console.log('Cancel Pressed'),
         style: 'cancel',
       },
       {
         text: 'OK',
         onPress: () => {
-          postOrder();
+          selectedDateOrderExist ? patchOrder() : postOrder();
         },
       },
     ]);
   };
 
-  // Mark the status as cancelled
-  const postOrder = async () => {
-    // Default state is Cancelled
+  const patchOrder = async () => {
     let processedStatus = OrderStatus.CANCELLED;
     if (selectedDateOrderExist?.status === OrderStatus.CANCELLED) {
       processedStatus = OrderStatus.ACTIVE;
     }
 
+    await OrderService.patchOrder(selectedDateOrderExist?._id!, processedStatus)
+      .then((_response: any) => {
+        Alert.alert(`Order successfully ${processedStatus?.toLowerCase()}.`);
+      })
+      .catch((error: any) => {
+        console.error('🚀 ~ file: OrderSelection.tsx ~ line 50 ~ postOrder ~ error', error);
+        Alert.alert(`Unable to update the order, please check the details again or contact support.`);
+      });
+
+    // Get all the orders to refresh the calendar
+    await getOrders();
+  };
+
+  // Mark the status as cancelled
+  const postOrder = async () => {
     const orderPayload = {
       userId: tiffinPlanetLoggedInUser?._id, // UserId which is stored in the Mongo DB
-      orderShipmentDate: selectedDate,
-      status: processedStatus,
+      orderShipmentDate: moment(selectedDate).format(DateFormat.DATE_TIME),
+      status: OrderStatus.CANCELLED, // Default state is Cancelled
     };
 
     await OrderService.postOrder(orderPayload)
@@ -98,7 +108,9 @@ const OrderSelection = () => {
         console.error('🚀 ~ file: OrderSelection.tsx ~ line 50 ~ postOrder ~ error', error);
         Alert.alert(`Unable to update the order, please check the details again or contact support.`);
       });
-    getOrders();
+
+    // Get all the orders to refresh the calendar
+    await getOrders();
   };
 
   // Get all the orders for the logged in user
@@ -116,18 +128,18 @@ const OrderSelection = () => {
 
   // Set the current date selection to be the minimum date or today when all updated orders are populated
   useEffect(() => {
-    onDateSelection(minimumDate);
+    onDateSelection(minimumDate!);
   }, [allMyUpdatedOrders]);
 
   // Set the minimum date of the date picker
   useEffect(() => {
     const now = moment().hour(9);
     if (moment().isAfter(now)) {
-      const tomorrow = moment().day(1).toDate();
+      const tomorrow = moment().day(1).format(DateFormat.ISO8601);
       setMinimumDate(tomorrow);
       setSelectedDate(tomorrow);
     } else {
-      const today = moment().toDate();
+      const today = moment().format(DateFormat.ISO8601);
       setMinimumDate(today);
       setSelectedDate(today);
     }
@@ -155,9 +167,9 @@ const OrderSelection = () => {
         {minimumDate && selectedDate ? (
           <Calendar
             // Initially visible month. Default = now
-            initialDate={moment(minimumDate).format(DateFormat.ISO8601)}
+            initialDate={minimumDate}
             // Minimum date that can be selected, dates before minDate will be grayed out. Default = undefined
-            minDate={moment(minimumDate).format(DateFormat.ISO8601)}
+            minDate={minimumDate}
             // Handler which gets executed on day press. Default = undefined
             onDayPress={(day) => {
               onDateSelection(day?.dateString);

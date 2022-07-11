@@ -11,6 +11,7 @@ export enum DateFormat {
   UK = 'DD/MM/YYYY',
   UK_TIME = 'hh:mm A DD/MM/YYYY',
   ISO8601 = 'YYYY-MM-DD',
+  DATE_TIME = 'YYYY-MM-DD[T]00:00:00[Z]',
 }
 
 export enum AuthMode {
