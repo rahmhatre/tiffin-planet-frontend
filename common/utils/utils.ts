@@ -1,3 +1,5 @@
+import moment from 'moment';
+
 export const getAvatarInitials = (fullName: string) => {
   const names = fullName.split(' ');
   const initials = names.map((name) => name.substring(0, 1).toUpperCase());

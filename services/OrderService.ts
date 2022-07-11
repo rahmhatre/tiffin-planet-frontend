@@ -9,8 +9,9 @@ async function postOrder(userBody: any) {
 }
 
 async function getOrders(queryParams = {}) {
+  const authHeader = await getAuthTokenAsHeader();
   const url = `${baseURL}${ConstructUrlFromQueryParams(queryParams)}`;
-  const { data } = await TiffinPlanetAPI().get(url);
+  const { data } = await TiffinPlanetAPI(authHeader).get(url);
   return data;
 }
 

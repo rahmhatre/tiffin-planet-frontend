@@ -10,6 +10,7 @@ export enum GoogleAuthStatus {
 export enum DateFormat {
   UK = 'DD/MM/YYYY',
   UK_TIME = 'hh:mm A DD/MM/YYYY',
+  ISO8601 = 'YYYY-MM-DD',
 }
 
 export enum AuthMode {
@@ -31,6 +32,7 @@ export enum RegistrationPageType {
 export enum OrderStatus {
   PROCESSING = 'PROCESSING',
   DELIVERED = 'DELIVERED',
+  ACTIVE = 'ACTIVE',
   CANCELLED = 'CANCELLED',
   TRANSIT = 'TRANSIT',
   PAYMENTDUE = 'PAYMENTDUE',

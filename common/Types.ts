@@ -1,4 +1,4 @@
-import { UserType } from './Enums';
+import { OrderStatus, UserType } from './Enums';
 
 export interface TiffinPlanetAccessToken {
   aud: string;
@@ -20,4 +20,13 @@ export interface TiffinPlanetUserSchema {
   status: string;
   updatedAt: string;
   userType: UserType;
+}
+
+export interface TiffinPlanetOrderSchema {
+  _id: string;
+  createdAt: Date;
+  orderShipmentDate: Date;
+  status: OrderStatus;
+  updatedAt: Date;
+  userId: string;
 }

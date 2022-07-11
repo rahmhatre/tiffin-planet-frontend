@@ -6,7 +6,7 @@ import { Button, Text } from 'react-native-paper';
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import { getMyGoogleInfoApi } from '../../services/GoogleService';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { updateGoogleAccessToken } from '../../common/redux/authentication/googleAccessToken';
 import { updateGoogleLoggedInUserStateSlice } from '../../common/redux/googleLoggedInUserStateSlice/googleLoggedInUserStateSlice';
 import { Authentication, GoogleAuthStatus, RegistrationPageType } from '../../common/Enums';
@@ -17,6 +17,7 @@ import jwtDecode from 'jwt-decode';
 import { TiffinPlanetAccessToken, TiffinPlanetUserSchema } from '../../common/Types';
 import { UserService } from '../../services/UserService';
 import { updateTiffinPlanetLoggedInUserState } from '../../common/redux/tiffinPlanetUser/tiffinPlanetLoggedInUserStateSlice';
+import { TiffinPlanetLoggedInUserStateSelector } from '../../common/redux/selectors';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -24,6 +25,14 @@ export default function Login({ navigation }: any) {
   const [googleAccessToken, setGoogleAccessToken] = useState<string>();
   const [userInfo, setUserInfo] = useState<any>();
   const dispatch = useDispatch();
+
+  // const tiffinPlanetLoggedInUser: TiffinPlanetUserSchema = useSelector(TiffinPlanetLoggedInUserStateSelector);
+  // console.log('🚀 ~ file: Login.tsx ~ line 29 ~ Login ~ tiffinPlanetLoggedInUser', tiffinPlanetLoggedInUser);
+  // // If logged In user identity found then navigate to orders page
+  // if (tiffinPlanetLoggedInUser) {
+  //   console.log('$$$$$$$ USER NAVIGATED $$$$$$$$');
+  //   navigation.navigate(routes.Orders);
+  // }
 
   // TODO: Below client Ids should come from config, env or secrets
   const [request, response, promptAsync] = Google.useAuthRequest({
