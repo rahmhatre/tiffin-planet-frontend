@@ -1,6 +1,6 @@
 export const routes = {
   HomeScreen: 'HomeScreen',
-  Register: 'Register',
+  RegisterAndSignIn: 'RegisterAndSignIn',
   Orders: 'Orders',
   OrderView: 'OrderView',
 };

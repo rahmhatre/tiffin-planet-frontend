@@ -12,7 +12,7 @@ import { getValueFromSecureStorage } from '../../services/AxiosHelper';
 import { RegisterService } from '../../services/RegisterService';
 import { UserService } from '../../services/UserService';
 
-export default function Register({ route, navigation }: any) {
+export default function RegisterAndSignIn({ route, navigation }: any) {
   const { registrationPageType } = route.params;
   // TODO: store the logged in user in the store
   const dispatch = useDispatch();
@@ -60,7 +60,6 @@ export default function Register({ route, navigation }: any) {
 
   const signInUser = async () => {
     setDisableSubmitBtn(true);
-    console.log('🚀 ~ file: Register.tsx ~ line 10 ~ signInUser ~ name', name, email, password);
 
     // Check for null values
     if (!password || !email) {

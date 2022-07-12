@@ -8,7 +8,7 @@ import { Provider } from 'react-redux';
 import store from './common/redux/store';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Register from './pages/Login/Register';
+import RegisterAndSignIn from './pages/Login/RegisterAndSignIn';
 import { routes } from './common/routes/routes';
 // import {
 //   DarkTheme as PaperDarkTheme,
@@ -22,7 +22,7 @@ function LoginAndRegistrationStack() {
     // TODO: initial route is Orders for Dev change to original Login
     <LoginStack.Navigator initialRouteName={routes.HomeScreen}>
       <LoginStack.Screen name={routes.HomeScreen} options={{ title: '' }} component={HomeScreen} />
-      <LoginStack.Screen name={routes.Register} options={{ title: '' }} component={Register} />
+      <LoginStack.Screen name={routes.RegisterAndSignIn} options={{ title: '' }} component={RegisterAndSignIn} />
       <LoginStack.Screen name={routes.Orders} component={OrderSelection} />
       <LoginStack.Screen name={routes.OrderView} component={OrderView} />
     </LoginStack.Navigator>

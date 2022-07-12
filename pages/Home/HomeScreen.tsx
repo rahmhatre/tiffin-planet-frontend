@@ -120,7 +120,7 @@ export default function HomeScreen({ navigation }: any) {
 
   // Navigate to Registration Page for Manual Sign in and Sign up flow
   const navigateToRegistrationPage = (pageType: RegistrationPageType) => {
-    navigation.navigate(routes.Register, {
+    navigation.navigate(routes.RegisterAndSignIn, {
       registrationPageType: pageType,
     });
   };
