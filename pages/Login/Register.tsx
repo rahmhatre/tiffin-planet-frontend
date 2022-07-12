@@ -37,6 +37,27 @@ export default function Register({ route, navigation }: any) {
     }
   };
 
+  const fetchJwtTokenAndNavigateUser = async () => {
+    // Fetch access token from Secure Storage
+    const accessToken = await getValueFromSecureStorage(Authentication.Authorization);
+
+    // Decode the JWT token
+    var decodedToken: TiffinPlanetAccessToken = jwtDecode(accessToken!);
+
+    // Get logged In user by Id
+    const userResponse: TiffinPlanetUserSchema = await UserService.getUserById(decodedToken?.userId);
+
+    // Dispatch user context to redux and navigate user to respective screen
+    dispatch(updateTiffinPlanetLoggedInUserState(userResponse));
+
+    // If user type is user then navigate to Order page else Order View Page
+    if (userResponse?.userType === UserType.USER) {
+      navigation.navigate(routes.Orders);
+    } else {
+      navigation.navigate(routes.OrderView);
+    }
+  };
+
   const signInUser = async () => {
     setDisableSubmitBtn(true);
     console.log('🚀 ~ file: Register.tsx ~ line 10 ~ signInUser ~ name', name, email, password);
@@ -53,20 +74,7 @@ export default function Register({ route, navigation }: any) {
       await RegisterService.loginUser(changeNullToUndefined(email)!, password);
       setDisableSubmitBtn(false);
 
-      // Fetch access token from Secure Storage
-      const accessToken = await getValueFromSecureStorage(Authentication.Authorization);
-
-      // Decode the JWT token
-      var decodedToken: TiffinPlanetAccessToken = jwtDecode(accessToken!);
-
-      // Get logged In user by Id
-      const userResponse: TiffinPlanetUserSchema = await UserService.getUserById(decodedToken?.userId);
-
-      // Dispatch user context to redux and navigate user to respective screen
-      dispatch(updateTiffinPlanetLoggedInUserState(userResponse));
-
-      Alert.alert(`Signed in successfully.`);
-      navigation.navigate(routes.Orders);
+      await fetchJwtTokenAndNavigateUser();
     } catch (error: any) {
       setDisableSubmitBtn(false);
       console.error('🚀 ~ file: Register.tsx ~ line 37 ~ signInUser ~ error', error);
@@ -100,17 +108,16 @@ export default function Register({ route, navigation }: any) {
       password: password,
     };
 
-    await RegisterService.registerUser(userPayload)
-      .then((_response: any) => {
-        setDisableSubmitBtn(false);
-        Alert.alert(`Registered successfully.`);
-        navigation.navigate(routes.Orders);
-      })
-      .catch((error: any) => {
-        setDisableSubmitBtn(false);
-        console.error('🚀 ~ file: Register.tsx ~ line 37 ~ createUser ~ error', error);
-        Alert.alert(`Unable to register, please check the details again or contact support.`);
-      });
+    try {
+      await RegisterService.registerUser(userPayload);
+      setDisableSubmitBtn(false);
+
+      await fetchJwtTokenAndNavigateUser();
+    } catch (error) {
+      setDisableSubmitBtn(false);
+      console.error('🚀 ~ file: Register.tsx ~ line 37 ~ createUser ~ error', error);
+      Alert.alert(`Unable to register, please check the details again or contact support.`);
+    }
   };
 
   return (

@@ -2,6 +2,7 @@ import React from 'react';
 import * as LocalAuthentication from 'expo-local-authentication';
 import Login from './pages/Login/Login';
 import OrderSelection from './pages/Orders/OrderSelection';
+import OrderView from './pages/Admin/OrderView';
 import { Provider as PaperProvider, DarkTheme, DefaultTheme } from 'react-native-paper';
 import { Provider } from 'react-redux';
 import store from './common/redux/store';
@@ -23,6 +24,7 @@ function LoginAndRegistrationStack() {
       <LoginStack.Screen name={routes.Login} options={{ title: '' }} component={Login} />
       <LoginStack.Screen name={routes.Register} options={{ title: '' }} component={Register} />
       <LoginStack.Screen name={routes.Orders} component={OrderSelection} />
+      <LoginStack.Screen name={routes.OrderView} component={OrderView} />
     </LoginStack.Navigator>
   );
 }

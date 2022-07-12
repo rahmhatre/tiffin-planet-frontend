@@ -9,7 +9,7 @@ import { getMyGoogleInfoApi } from '../../services/GoogleService';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateGoogleAccessToken } from '../../common/redux/authentication/googleAccessToken';
 import { updateGoogleLoggedInUserStateSlice } from '../../common/redux/googleLoggedInUserStateSlice/googleLoggedInUserStateSlice';
-import { Authentication, GoogleAuthStatus, RegistrationPageType } from '../../common/Enums';
+import { Authentication, GoogleAuthStatus, RegistrationPageType, UserType } from '../../common/Enums';
 import { routes } from '../../common/routes/routes';
 import { RegisterService } from '../../services/RegisterService';
 import { getValueFromSecureStorage } from '../../services/AxiosHelper';
@@ -31,7 +31,11 @@ export default function Login({ navigation }: any) {
   useEffect(() => {
     // If logged In user identity found then navigate to orders page
     if (tiffinPlanetLoggedInUser) {
-      navigation.navigate(routes.Orders);
+      if (tiffinPlanetLoggedInUser?.userType === UserType.USER) {
+        navigation.navigate(routes.Orders);
+      } else {
+        navigation.navigate(routes.OrderView);
+      }
     }
   }, [tiffinPlanetLoggedInUser]);
 
@@ -84,7 +88,13 @@ export default function Login({ navigation }: any) {
 
             // Dispatch user context to redux and navigate user to respective screen
             dispatch(updateTiffinPlanetLoggedInUserState(userResponse));
-            navigation.navigate(routes.Orders);
+
+            // If user type is user then navigate to Order page else Order View Page
+            if (userResponse?.userType === UserType.USER) {
+              navigation.navigate(routes.Orders);
+            } else {
+              navigation.navigate(routes.OrderView);
+            }
           } catch (error: any) {
             console.error('🚀 ~ file: Login.tsx ~ line 78 ~ loginWithGoogleUserInfo ~ error', error);
           }

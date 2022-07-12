@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Alert, Platform, ScrollView, StyleSheet, Switch, View, Text } from 'react-native';
+import { Alert, ScrollView, StyleSheet, View, Text } from 'react-native';
 import { Button } from 'react-native-paper';
 import { DateFormat, OrderStatus } from '../../common/Enums';
 import { OrderService } from '../../services/OrderService';
@@ -164,7 +164,7 @@ const OrderSelection = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.innerPage}>
-      <View style={{ marginLeft: 20, paddingBottom: 20 }}>
+      <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingBottom: 20 }}>
         <Text style={styles.doNotWantTitle}>Select the date you do not want the tiffin</Text>
       </View>
       <View>
