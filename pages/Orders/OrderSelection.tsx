@@ -11,13 +11,22 @@ import { MarkingProps } from 'react-native-calendars/src/calendar/day/marking';
 import moment from 'moment';
 
 const OrderSelection = () => {
+  // Minimum and Max Dates which are shows on the calendar
   const [minimumDate, setMinimumDate] = useState<string>(); // DateFormat.ISO8601 - YYYY-MM-DD
+  const [maximumDate, setMaximumDate] = useState<string>(); // DateFormat.ISO8601 - YYYY-MM-DD
+
+  // Selected Date from onChange event on Calendar
   const [selectedDate, setSelectedDate] = useState<string>(); // DateFormat.ISO8601 - YYYY-MM-DD
+
+  // Does an order exist for the same date
   const [selectedDateOrderExist, setSelectedDateOrderExist] = useState<TiffinPlanetOrderSchema | undefined>(undefined);
+
+  // List of all my orders active or cancelled
   const [allMyUpdatedOrders, setAllMyUpdatedOrders] = useState<TiffinPlanetOrderSchema[]>(); // Database schema which is stored in DB
   const [markedDates, setMarkedDates] = useState<Record<string, MarkingProps>>();
   const tiffinPlanetLoggedInUser: TiffinPlanetUserSchema = useSelector(TiffinPlanetLoggedInUserStateSelector);
 
+  // Marked dates which will highlight the active and cancelled orders in the calendar
   const marked = useMemo(() => {
     const isoSelectedDate = moment(selectedDate).format(DateFormat.ISO8601);
     return {
@@ -73,6 +82,7 @@ const OrderSelection = () => {
     ]);
   };
 
+  // Update the order once the order has been created
   const patchOrder = async () => {
     let processedStatus = OrderStatus.CANCELLED;
     if (selectedDateOrderExist?.status === OrderStatus.CANCELLED) {
@@ -133,15 +143,17 @@ const OrderSelection = () => {
 
   // Set the minimum date of the date picker
   useEffect(() => {
-    const now = moment().hour(9);
-    if (moment().isAfter(now)) {
+    const nineAMToday = moment().utc().hour(9);
+    if (moment().isSameOrAfter(nineAMToday)) {
       const tomorrow = moment().day(1).format(DateFormat.ISO8601);
       setMinimumDate(tomorrow);
       setSelectedDate(tomorrow);
+      setMaximumDate(moment().add(1, 'days').add(2, 'months').format(DateFormat.ISO8601));
     } else {
-      const today = moment().format(DateFormat.ISO8601);
+      const today = moment().utc().format(DateFormat.ISO8601);
       setMinimumDate(today);
       setSelectedDate(today);
+      setMaximumDate(moment().add(2, 'months').format(DateFormat.ISO8601));
     }
 
     // Get all the orders on page load
@@ -153,16 +165,16 @@ const OrderSelection = () => {
       <View style={{ marginLeft: 20, paddingBottom: 20 }}>
         <Text style={styles.doNotWantTitle}>Select the date you do not want the tiffin</Text>
       </View>
-      {/* <View>
+      <View>
         <Button
           mode="text"
           onPress={() => {
-            setDate(minimumDate);
+            setSelectedDate(minimumDate);
           }}
         >
           Today
         </Button>
-      </View> */}
+      </View>
       <View style={styles.datePickerView}>
         {minimumDate && selectedDate ? (
           <Calendar
@@ -170,6 +182,7 @@ const OrderSelection = () => {
             initialDate={minimumDate}
             // Minimum date that can be selected, dates before minDate will be grayed out. Default = undefined
             minDate={minimumDate}
+            maxDate={maximumDate}
             // Handler which gets executed on day press. Default = undefined
             onDayPress={(day) => {
               onDateSelection(day?.dateString);
