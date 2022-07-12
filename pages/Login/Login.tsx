@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Image, View, ScrollView } from 'react-native';
-import { Button, Text } from 'react-native-paper';
+import { ActivityIndicator, Button, Text } from 'react-native-paper';
 
 // Authentication
 import * as Google from 'expo-auth-session/providers/google';
@@ -24,15 +24,16 @@ WebBrowser.maybeCompleteAuthSession();
 export default function Login({ navigation }: any) {
   const [googleAccessToken, setGoogleAccessToken] = useState<string>();
   const [userInfo, setUserInfo] = useState<any>();
+  const [loading, setLoading] = useState<boolean>(false);
+  const tiffinPlanetLoggedInUser: TiffinPlanetUserSchema = useSelector(TiffinPlanetLoggedInUserStateSelector);
   const dispatch = useDispatch();
 
-  // const tiffinPlanetLoggedInUser: TiffinPlanetUserSchema = useSelector(TiffinPlanetLoggedInUserStateSelector);
-  // console.log('🚀 ~ file: Login.tsx ~ line 29 ~ Login ~ tiffinPlanetLoggedInUser', tiffinPlanetLoggedInUser);
-  // // If logged In user identity found then navigate to orders page
-  // if (tiffinPlanetLoggedInUser) {
-  //   console.log('$$$$$$$ USER NAVIGATED $$$$$$$$');
-  //   navigation.navigate(routes.Orders);
-  // }
+  useEffect(() => {
+    // If logged In user identity found then navigate to orders page
+    if (tiffinPlanetLoggedInUser) {
+      navigation.navigate(routes.Orders);
+    }
+  }, [tiffinPlanetLoggedInUser]);
 
   // TODO: Below client Ids should come from config, env or secrets
   const [request, response, promptAsync] = Google.useAuthRequest({
@@ -44,6 +45,7 @@ export default function Login({ navigation }: any) {
   // When google returns the callback response
   // Check for the response type and update the redux state
   useEffect(() => {
+    setLoading(false);
     if (response?.type === GoogleAuthStatus.success) {
       dispatch(updateGoogleAccessToken(response));
       setGoogleAccessToken(response?.authentication?.accessToken!);
@@ -115,33 +117,40 @@ export default function Login({ navigation }: any) {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <View style={{ paddingBottom: 20 }}>
-        <Image style={styles.companyLogo} source={require('./../../assets/tiffin_planet.png')} />
-      </View>
-      <View style={{ paddingBottom: 20 }}>
-        <Text>The easiest way to start engaging with Tiffin Planet</Text>
-      </View>
-      <View style={{ paddingBottom: 10 }}>
-        <Button
-          style={styles.buttonSize}
-          icon="login"
-          mode="contained"
-          onPress={() => {
-            promptAsync({ showInRecents: true });
-          }}
-        >
-          Login with Google
-        </Button>
-        <Button style={styles.buttonSize} mode="outlined" onPress={() => navigateToRegistrationPage(RegistrationPageType.SIGN_IN)}>
-          Sign In
-        </Button>
-      </View>
-      <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignContent: 'center', width: '100%', alignItems: 'baseline' }}>
-        <Text>Dont have an account? </Text>
-        <Button mode="text" onPress={() => navigateToRegistrationPage(RegistrationPageType.SIGN_UP)}>
-          Sign Up
-        </Button>
-      </View>
+      {loading ? (
+        <ActivityIndicator animating={true} color={'purple'} />
+      ) : (
+        <>
+          <View style={{ paddingBottom: 20 }}>
+            <Image style={styles.companyLogo} source={require('./../../assets/tiffin_planet.png')} />
+          </View>
+          <View style={{ paddingBottom: 20 }}>
+            <Text>The easiest way to start engaging with Tiffin Planet</Text>
+          </View>
+          <View style={{ paddingBottom: 10 }}>
+            <Button
+              style={styles.buttonSize}
+              icon="login"
+              mode="contained"
+              onPress={() => {
+                promptAsync({ showInRecents: true });
+                setLoading(true);
+              }}
+            >
+              Login with Google
+            </Button>
+            <Button style={styles.buttonSize} mode="outlined" onPress={() => navigateToRegistrationPage(RegistrationPageType.SIGN_IN)}>
+              Sign In
+            </Button>
+          </View>
+          <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignContent: 'center', width: '100%', alignItems: 'baseline' }}>
+            <Text>Dont have an account? </Text>
+            <Button mode="text" onPress={() => navigateToRegistrationPage(RegistrationPageType.SIGN_UP)}>
+              Sign Up
+            </Button>
+          </View>
+        </>
+      )}
     </ScrollView>
   );
 }

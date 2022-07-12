@@ -9,6 +9,7 @@ import { TiffinPlanetOrderSchema, TiffinPlanetUserSchema } from '../../common/Ty
 import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
 import { MarkingProps } from 'react-native-calendars/src/calendar/day/marking';
 import moment from 'moment';
+import { getUtcDate } from '../../common/utils/utils';
 
 const OrderSelection = () => {
   // Minimum and Max Dates which are shows on the calendar
@@ -143,14 +144,15 @@ const OrderSelection = () => {
 
   // Set the minimum date of the date picker
   useEffect(() => {
-    const nineAMToday = moment().utc().hour(9);
-    if (moment().isSameOrAfter(nineAMToday)) {
-      const tomorrow = moment().day(1).format(DateFormat.ISO8601);
+    const nineAMToday = getUtcDate(9);
+    const isTimeAfterNineAM = moment().isSameOrAfter(nineAMToday);
+    if (isTimeAfterNineAM) {
+      const tomorrow = nineAMToday.add(1, 'days').format(DateFormat.ISO8601);
       setMinimumDate(tomorrow);
       setSelectedDate(tomorrow);
       setMaximumDate(moment().add(1, 'days').add(2, 'months').format(DateFormat.ISO8601));
     } else {
-      const today = moment().utc().format(DateFormat.ISO8601);
+      const today = nineAMToday.format(DateFormat.ISO8601);
       setMinimumDate(today);
       setSelectedDate(today);
       setMaximumDate(moment().add(2, 'months').format(DateFormat.ISO8601));
@@ -178,8 +180,9 @@ const OrderSelection = () => {
       <View style={styles.datePickerView}>
         {minimumDate && selectedDate ? (
           <Calendar
+            style={{ borderWidth: 1, borderRadius: 5 }}
             // Initially visible month. Default = now
-            initialDate={minimumDate}
+            initialDate={selectedDate}
             // Minimum date that can be selected, dates before minDate will be grayed out. Default = undefined
             minDate={minimumDate}
             maxDate={maximumDate}
@@ -202,10 +205,9 @@ const OrderSelection = () => {
       {selectedDateOrderExist ? (
         <View style={styles.orderAlreadyExists}>
           <Text style={styles.orderAlreadyExistsText}>Order status is {selectedDateOrderExist?.status?.toLowerCase()} for the selected date.</Text>
-          <Text style={styles.orderAlreadyExistsText}>Do you wish to {selectedDateOrderExist?.status === OrderStatus.CANCELLED ? 'activate' : 'cancel'} your order.</Text>
+          <Text style={styles.orderAlreadyExistsText}>If you wish to {selectedDateOrderExist?.status === OrderStatus.CANCELLED ? 'continue with' : 'cancel'} your order, click the button below.</Text>
         </View>
       ) : null}
-
       <View style={styles.submitButton}>
         <Button style={styles.buttonSize} icon="login" mode="contained" onPress={submitButtonPress}>
           {selectedDateOrderExist?.status === OrderStatus.CANCELLED ? 'Activate' : 'Cancel'}

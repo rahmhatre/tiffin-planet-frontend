@@ -45,3 +45,7 @@ export function toPascalCase(text?: string | null) {
 
   return finalWord?.join(' ');
 }
+
+export const getUtcDate = (hour: number = 0, minutes: number = 0) => {
+  return moment().utc().hour(hour).minutes(minutes).seconds(0).milliseconds(0);
+};
