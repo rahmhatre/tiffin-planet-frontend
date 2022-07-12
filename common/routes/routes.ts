@@ -1,5 +1,5 @@
 export const routes = {
-  Login: 'Login',
+  HomeScreen: 'HomeScreen',
   Register: 'Register',
   Orders: 'Orders',
   OrderView: 'OrderView',

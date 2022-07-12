@@ -21,7 +21,7 @@ import { TiffinPlanetLoggedInUserStateSelector } from '../../common/redux/select
 
 WebBrowser.maybeCompleteAuthSession();
 
-export default function Login({ navigation }: any) {
+export default function HomeScreen({ navigation }: any) {
   const [googleAccessToken, setGoogleAccessToken] = useState<string>();
   const [userInfo, setUserInfo] = useState<any>();
   const [loading, setLoading] = useState<boolean>(false);

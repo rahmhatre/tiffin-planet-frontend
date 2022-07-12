@@ -1,6 +1,6 @@
 import React from 'react';
 import * as LocalAuthentication from 'expo-local-authentication';
-import Login from './pages/Login/Login';
+import HomeScreen from './pages/Home/HomeScreen';
 import OrderSelection from './pages/Orders/OrderSelection';
 import OrderView from './pages/Admin/OrderView';
 import { Provider as PaperProvider, DarkTheme, DefaultTheme } from 'react-native-paper';
@@ -20,8 +20,8 @@ const LoginStack = createNativeStackNavigator();
 function LoginAndRegistrationStack() {
   return (
     // TODO: initial route is Orders for Dev change to original Login
-    <LoginStack.Navigator initialRouteName={routes.Login}>
-      <LoginStack.Screen name={routes.Login} options={{ title: '' }} component={Login} />
+    <LoginStack.Navigator initialRouteName={routes.HomeScreen}>
+      <LoginStack.Screen name={routes.HomeScreen} options={{ title: '' }} component={HomeScreen} />
       <LoginStack.Screen name={routes.Register} options={{ title: '' }} component={Register} />
       <LoginStack.Screen name={routes.Orders} component={OrderSelection} />
       <LoginStack.Screen name={routes.OrderView} component={OrderView} />
