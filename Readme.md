@@ -18,3 +18,4 @@
 - To configure the app for ios / android run `eas build:configure`
 - Run `eas build --platform all` to create build for both
 - `eas build --platform ios` or `eas build --platform android` for individual builds
+- Run `eas build -p android --profile preview2` which has been configured in `eas.json` to generate `apk` build
