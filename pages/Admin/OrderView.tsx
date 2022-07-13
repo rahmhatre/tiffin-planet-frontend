@@ -135,9 +135,6 @@ const OrderView = () => {
             style={{ borderWidth: 1, borderRadius: 5 }}
             // Initially visible month. Default = now
             initialDate={selectedDate}
-            // Minimum date that can be selected, dates before minDate will be grayed out. Default = undefined
-            minDate={minimumDate}
-            maxDate={maximumDate}
             // Handler which gets executed on day press. Default = undefined
             onDayPress={(day) => {
               onDateSelection(day?.dateString);
