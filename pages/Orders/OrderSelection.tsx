@@ -164,7 +164,7 @@ const OrderSelection = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.innerPage}>
-      <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingBottom: 20 }}>
+      <View style={styles.titleWrapper}>
         <Text style={styles.doNotWantTitle}>Select the date you do not want the tiffin</Text>
       </View>
       <View>
@@ -222,6 +222,12 @@ const styles = StyleSheet.create({
     padding: 20,
     justifyContent: 'center',
     alignContent: 'center',
+  },
+  titleWrapper: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingBottom: 20,
   },
   doNotWantTitle: {
     paddingTop: 10,

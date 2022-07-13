@@ -3,13 +3,14 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Text, ScrollView, StyleSheet, View, Alert } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { MarkingProps } from 'react-native-calendars/src/calendar/day/marking';
-import { Button } from 'react-native-paper';
+import { Avatar, Button } from 'react-native-paper';
 import { useSelector } from 'react-redux';
-import { DateFormat } from '../../common/Enums';
+import { DateFormat, OrderStatus } from '../../common/Enums';
 import { TiffinPlanetLoggedInUserStateSelector } from '../../common/redux/selectors';
-import { TiffinPlanetOrderSchema, TiffinPlanetUserSchema } from '../../common/Types';
-import { getUtcDate } from '../../common/utils/utils';
+import { TiffinPlanetOrderSchema, TiffinPlanetUIOrderViewSchema, TiffinPlanetUserSchema } from '../../common/Types';
+import { generateColor, getAvatarInitials, getUtcDate } from '../../common/utils/utils';
 import { OrderService } from '../../services/OrderService';
+import { UserService } from '../../services/UserService';
 
 const OrderView = () => {
   // Minimum and Max Dates which are shows on the calendar
@@ -20,7 +21,12 @@ const OrderView = () => {
   const [selectedDate, setSelectedDate] = useState<string>(); // DateFormat.ISO8601 - YYYY-MM-DD
 
   // List of all my orders active or cancelled
+  const [allUsers, setAllUsers] = useState<TiffinPlanetUserSchema[]>(); // Database schema which is stored in DB
   const [allOrdersForSelectedDate, setAllOrdersForSelectedDate] = useState<TiffinPlanetOrderSchema[]>(); // Database schema which is stored in DB
+
+  // Mapped TiffinPlanetUIOrderViewSchema for the UI
+  const [ordersToday, setOrdersToday] = useState<TiffinPlanetUIOrderViewSchema[]>(); // Database schema which is stored in DB
+
   const [markedDates, setMarkedDates] = useState<Record<string, MarkingProps>>();
   const tiffinPlanetLoggedInUser: TiffinPlanetUserSchema = useSelector(TiffinPlanetLoggedInUserStateSelector);
 
@@ -40,20 +46,26 @@ const OrderView = () => {
 
   // Set date
   const onDateSelection = (date: string) => {
-    // Check if we already have a cancelled order for the selected date.
-    // const dateFound = allMyUpdatedOrders?.find((order: TiffinPlanetOrderSchema) => moment(order?.orderShipmentDate).format(DateFormat.UK) === moment(date).format(DateFormat.UK));
-    // setSelectedDateOrderExist(dateFound);
-
     // Set the selected date
     setSelectedDate(date);
   };
 
+  const getUsers = async () => {
+    await UserService.getUsers()
+      .then((response: Array<TiffinPlanetUserSchema>) => {
+        setAllUsers(response);
+      })
+      .catch((error: any) => {
+        console.error('🚀 ~ file: OrderView.tsx ~ line 60 ~ getUsers ~ error', error);
+        Alert.alert(`Unable to fetch your users.`);
+      });
+  };
+
   // Get all the orders for the logged in user
   const getOrders = async () => {
-    // { orderShipmentDate: tiffinPlanetLoggedInUser?._id }
     await OrderService.getOrders({ orderShipmentDate: selectedDate })
       .then((response: Array<TiffinPlanetOrderSchema>) => {
-        console.log('🚀 ~ file: OrderView.tsx ~ line 30 ~ .then ~ response', response);
+        setAllOrdersForSelectedDate(response);
       })
       .catch((error: any) => {
         console.log('🚀 ~ file: OrderView.tsx ~ line 34 ~ getOrders ~ error', error);
@@ -61,9 +73,22 @@ const OrderView = () => {
       });
   };
 
+  useEffect(() => {
+    if (allUsers && allOrdersForSelectedDate) {
+      const ordersToday: TiffinPlanetUIOrderViewSchema[] = allOrdersForSelectedDate?.map((order: TiffinPlanetOrderSchema) => ({
+        ...order,
+        user: allUsers.find((user: TiffinPlanetUserSchema) => user?._id === order?.userId),
+        avatarColor: generateColor(),
+      }));
+      setOrdersToday(ordersToday);
+    }
+  }, [allUsers, allOrdersForSelectedDate]);
+
   // Get Orders for the selected date
   useEffect(() => {
-    getOrders();
+    if (selectedDate) {
+      getOrders();
+    }
   }, [selectedDate]);
 
   // Set the minimum date of the date picker
@@ -84,11 +109,14 @@ const OrderView = () => {
 
     // Get all orders for the selected date
     getOrders();
+
+    // Get all the users registered
+    getUsers();
   }, []);
 
   return (
     <ScrollView contentContainerStyle={styles.innerPage}>
-      <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingBottom: 20 }}>
+      <View style={styles.titleWrapper}>
         <Text style={styles.title}>Select the date to see orders</Text>
       </View>
       <View>
@@ -126,6 +154,25 @@ const OrderView = () => {
           />
         ) : null}
       </View>
+      <ScrollView>
+        {ordersToday ? (
+          <>
+            <View style={styles.titleWrapper}>
+              <Text style={styles.title}>Cancelled Orders</Text>
+            </View>
+            {ordersToday
+              .filter((_filterOrder: TiffinPlanetUIOrderViewSchema) => _filterOrder?.status === OrderStatus.CANCELLED) // Filter only Cancelled Orders
+              .map((order: TiffinPlanetUIOrderViewSchema, index: number) => (
+                <View key={index} style={styles.cancelledOrdersView}>
+                  {order?.user?.name ? <Avatar.Text color={'white'} style={{ backgroundColor: order?.avatarColor }} size={28} label={getAvatarInitials(order?.user?.name)} /> : null}
+                  <Text style={{ marginLeft: order?.user?.name ? 10 : 0 }}>
+                    {order?.user?.name} {order?.user?.email}
+                  </Text>
+                </View>
+              ))}
+          </>
+        ) : null}
+      </ScrollView>
     </ScrollView>
   );
 };
@@ -136,31 +183,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignContent: 'center',
   },
+  titleWrapper: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingBottom: 20,
+  },
   title: {
     paddingTop: 10,
     fontSize: 18,
     fontWeight: 'bold',
   },
-  buttonSize: {
-    width: 230,
-  },
   datePickerView: {
     paddingTop: 20,
     paddingBottom: 20,
   },
-  submitButton: {
+  cancelledOrdersView: {
     display: 'flex',
-    justifyContent: 'center',
-    width: '100%',
+    alignItems: 'center',
     flexDirection: 'row',
-  },
-  orderAlreadyExists: {
-    paddingTop: 10,
-    paddingBottom: 20,
-    marginLeft: 20,
-  },
-  orderAlreadyExistsText: {
-    fontSize: 16,
+    marginBottom: 5,
   },
 });
 

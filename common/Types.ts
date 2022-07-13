@@ -30,3 +30,14 @@ export interface TiffinPlanetOrderSchema {
   updatedAt: Date;
   userId: string;
 }
+
+export interface TiffinPlanetUIOrderViewSchema {
+  _id: string;
+  createdAt: Date;
+  orderShipmentDate: Date;
+  status: OrderStatus;
+  updatedAt: Date;
+  userId: string;
+  user?: TiffinPlanetUserSchema;
+  avatarColor: string; // Used for UI only
+}
