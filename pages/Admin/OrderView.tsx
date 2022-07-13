@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Text, ScrollView, StyleSheet, View, Alert } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { MarkingProps } from 'react-native-calendars/src/calendar/day/marking';
-import { Avatar, Button } from 'react-native-paper';
+import { Avatar, Badge, Button } from 'react-native-paper';
 import { useSelector } from 'react-redux';
 import { DateFormat, OrderStatus } from '../../common/Enums';
 import { TiffinPlanetLoggedInUserStateSelector } from '../../common/redux/selectors';
@@ -25,7 +25,8 @@ const OrderView = () => {
   const [allOrdersForSelectedDate, setAllOrdersForSelectedDate] = useState<TiffinPlanetOrderSchema[]>(); // Database schema which is stored in DB
 
   // Mapped TiffinPlanetUIOrderViewSchema for the UI
-  const [ordersToday, setOrdersToday] = useState<TiffinPlanetUIOrderViewSchema[]>(); // Database schema which is stored in DB
+  const [totalOrdersToday, setTotalOrdersToday] = useState<TiffinPlanetUIOrderViewSchema[]>(); // Database schema which is stored in DB
+  const [totalCancelledOrdersToday, setTotalCancelledOrdersToday] = useState<TiffinPlanetUIOrderViewSchema[]>(); // Database schema which is stored in DB
 
   const [markedDates, setMarkedDates] = useState<Record<string, MarkingProps>>();
   const tiffinPlanetLoggedInUser: TiffinPlanetUserSchema = useSelector(TiffinPlanetLoggedInUserStateSelector);
@@ -75,12 +76,19 @@ const OrderView = () => {
 
   useEffect(() => {
     if (allUsers && allOrdersForSelectedDate) {
+      // Merge Todays Orders with User Info
       const ordersToday: TiffinPlanetUIOrderViewSchema[] = allOrdersForSelectedDate?.map((order: TiffinPlanetOrderSchema) => ({
         ...order,
         user: allUsers.find((user: TiffinPlanetUserSchema) => user?._id === order?.userId),
         avatarColor: generateColor(),
       }));
-      setOrdersToday(ordersToday);
+
+      // Set total todays orders
+      setTotalOrdersToday(ordersToday);
+
+      // Filter total cancelled orders
+      const totalCancelled = ordersToday.filter((_filterOrder: TiffinPlanetUIOrderViewSchema) => _filterOrder?.status === OrderStatus.CANCELLED);
+      setTotalCancelledOrdersToday(totalCancelled);
     }
   }, [allUsers, allOrdersForSelectedDate]);
 
@@ -152,12 +160,13 @@ const OrderView = () => {
         ) : null}
       </View>
       <ScrollView>
-        {ordersToday ? (
+        {totalCancelledOrdersToday ? (
           <>
             <View style={styles.titleWrapper}>
+              <Badge size={25}>{totalCancelledOrdersToday?.length}</Badge>
               <Text style={styles.title}>Cancelled Orders</Text>
             </View>
-            {ordersToday
+            {totalCancelledOrdersToday
               .filter((_filterOrder: TiffinPlanetUIOrderViewSchema) => _filterOrder?.status === OrderStatus.CANCELLED) // Filter only Cancelled Orders
               .map((order: TiffinPlanetUIOrderViewSchema, index: number) => (
                 <View key={index} style={styles.cancelledOrdersView}>
@@ -182,18 +191,20 @@ const styles = StyleSheet.create({
   },
   titleWrapper: {
     display: 'flex',
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    paddingBottom: 20,
+    marginBottom: 20,
   },
   title: {
-    paddingTop: 10,
+    marginLeft: 5,
+    marginTop: 10,
     fontSize: 18,
     fontWeight: 'bold',
   },
   datePickerView: {
-    paddingTop: 20,
-    paddingBottom: 20,
+    marginTop: 20,
+    marginBottom: 20,
   },
   cancelledOrdersView: {
     display: 'flex',
