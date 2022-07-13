@@ -1,15 +1,20 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import * as LocalAuthentication from 'expo-local-authentication';
 import HomeScreen from './pages/Home/HomeScreen';
 import OrderSelection from './pages/Orders/OrderSelection';
 import OrderView from './pages/Admin/OrderView';
 import { Provider as PaperProvider, DarkTheme, DefaultTheme } from 'react-native-paper';
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import store from './common/redux/store';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import RegisterAndSignIn from './pages/Login/RegisterAndSignIn';
 import { routes } from './common/routes/routes';
+import { getValueFromSecureStorage } from './services/AxiosHelper';
+import { Authentication } from './common/Enums';
+import jwtDecode from 'jwt-decode';
+import { TiffinPlanetAccessToken } from './common/Types';
+import moment from 'moment';
 // import {
 //   DarkTheme as PaperDarkTheme,
 //   DefaultTheme as PaperDefaultTheme,
@@ -17,19 +22,25 @@ import { routes } from './common/routes/routes';
 
 const LoginStack = createNativeStackNavigator();
 
-function LoginAndRegistrationStack() {
-  return (
-    // TODO: initial route is Orders for Dev change to original Login
-    <LoginStack.Navigator initialRouteName={routes.HomeScreen}>
-      <LoginStack.Screen name={routes.HomeScreen} options={{ title: '' }} component={HomeScreen} />
-      <LoginStack.Screen name={routes.RegisterAndSignIn} options={{ title: '' }} component={RegisterAndSignIn} />
-      <LoginStack.Screen name={routes.Orders} component={OrderSelection} />
-      <LoginStack.Screen name={routes.OrderView} component={OrderView} />
-    </LoginStack.Navigator>
-  );
-}
-
 export default function App() {
+  // Set to true which will show the SignIn page as default
+  const [tokenExpired, setTokenExpired] = useState<boolean>(true);
+
+  // Check if we have a token stored in secure store and if its valid
+  useEffect(() => {
+    const getAccessToken = async () => {
+      const accessToken = await getValueFromSecureStorage(Authentication.Authorization);
+      // Decode the JWT token
+      var decodedToken: TiffinPlanetAccessToken = jwtDecode(accessToken!);
+      // Get the token exp in datetime format
+      const tokenExpiryTime = new Date(decodedToken?.exp * 1000);
+      // Check if the token has been expired based on the exp time
+      const isTokenExpired = moment().isSameOrAfter(tokenExpiryTime);
+      setTokenExpired(isTokenExpired);
+    };
+    // getAccessToken();
+  }, []);
+
   // TODO: UNDO THIS ONCE THE AUTHENTICATION IS SORTED
   // useEffect(() => {
   //   const authenticate = async () => {
@@ -48,7 +59,12 @@ export default function App() {
     <Provider store={store}>
       <PaperProvider theme={DefaultTheme}>
         <NavigationContainer>
-          <LoginAndRegistrationStack />
+          <LoginStack.Navigator initialRouteName={routes.HomeScreen}>
+            <LoginStack.Screen name={routes.HomeScreen} options={{ title: '' }} component={HomeScreen} />
+            <LoginStack.Screen name={routes.RegisterAndSignIn} options={{ title: '' }} component={RegisterAndSignIn} />
+            <LoginStack.Screen name={routes.Orders} component={OrderSelection} />
+            <LoginStack.Screen name={routes.OrderView} component={OrderView} />
+          </LoginStack.Navigator>
         </NavigationContainer>
       </PaperProvider>
     </Provider>
