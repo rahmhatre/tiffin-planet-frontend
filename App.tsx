@@ -62,8 +62,8 @@ export default function App() {
           <LoginStack.Navigator initialRouteName={routes.HomeScreen}>
             <LoginStack.Screen name={routes.HomeScreen} options={{ title: '' }} component={HomeScreen} />
             <LoginStack.Screen name={routes.RegisterAndSignIn} options={{ title: '' }} component={RegisterAndSignIn} />
-            <LoginStack.Screen name={routes.Orders} component={OrderSelection} />
-            <LoginStack.Screen name={routes.OrderView} component={OrderView} />
+            <LoginStack.Screen name={routes.Orders} options={{ title: 'Orders' }} component={OrderSelection} />
+            <LoginStack.Screen name={routes.OrderView} options={{ title: 'Admin Order View' }} component={OrderView} />
           </LoginStack.Navigator>
         </NavigationContainer>
       </PaperProvider>

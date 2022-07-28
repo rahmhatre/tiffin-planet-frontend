@@ -60,20 +60,20 @@ export default function HomeScreen({ navigation }: any) {
 
   // Fetch the user info from google by the fetched access token
   useEffect(() => {
-    const loginWithGoogleUserInfo = async () => {
+    const loginToTiffinPlanetWithGoogleUserInfo = async () => {
       if (googleAccessToken) {
         // Get info from google
         const googleInfoResponse = await getMyGoogleInfoApi(googleAccessToken).catch((error: any) => {
           console.log('🚀 ~ file: Login.tsx ~ line 59 ~ getUserData ~ error', error);
         });
 
-        // if we get a response from google
+        // Response from Google
         if (googleInfoResponse) {
-          // console.log('🚀 ~ file: Login.tsx ~ line 50 ~ loginWithGoogleUserInfo ~ googleInfoResponse', googleInfoResponse);
-          // Save the google response in the store
-          // TODO: this has user image which can be displayed in Avatar in future
-          // dispatch(updateGoogleLoggedInUserStateSlice(googleInfoResponse));
-          // setUserInfo(googleInfoResponse);
+          console.log('🚀 ~ file: HomeScreen.tsx ~ line 72 ~ loginToTiffinPlanetWithGoogleUserInfo ~ googleInfoResponse', googleInfoResponse);
+
+          // Save the Google Response in the store
+          dispatch(updateGoogleLoggedInUserStateSlice(googleInfoResponse));
+          setUserInfo(googleInfoResponse);
 
           try {
             // Login with Google Info
@@ -98,12 +98,12 @@ export default function HomeScreen({ navigation }: any) {
               navigation.navigate(routes.OrderView);
             }
           } catch (error: any) {
-            console.error('🚀 ~ file: Login.tsx ~ line 78 ~ loginWithGoogleUserInfo ~ error', error);
+            console.error('🚀 ~ file: HomeScreen.tsx ~ line 101 ~ loginToTiffinPlanetWithGoogleUserInfo ~ error', error);
           }
         }
       }
     };
-    loginWithGoogleUserInfo();
+    loginToTiffinPlanetWithGoogleUserInfo();
   }, [googleAccessToken]);
 
   // TODO: Remove if not used
