@@ -141,7 +141,7 @@ export default function HomeScreen({ navigation }: any) {
           </View>
           <View style={{ paddingBottom: 10 }}>
             <Button
-              style={styles.buttonSize}
+              style={styles.loginWithGoogleBtn}
               icon="login"
               mode="contained"
               onPress={() => {
@@ -180,6 +180,10 @@ const styles = StyleSheet.create({
   imageLogo: {
     width: 150,
     height: 150,
+  },
+  loginWithGoogleBtn: {
+    width: 230,
+    marginBottom: 10,
   },
   buttonSize: {
     width: 230,
