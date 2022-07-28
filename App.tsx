@@ -38,7 +38,7 @@ export default function App() {
       const isTokenExpired = moment().isSameOrAfter(tokenExpiryTime);
       setTokenExpired(isTokenExpired);
     };
-    // getAccessToken();
+    getAccessToken();
   }, []);
 
   // TODO: UNDO THIS ONCE THE AUTHENTICATION IS SORTED

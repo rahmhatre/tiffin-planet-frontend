@@ -19,3 +19,54 @@
 - Run `eas build --platform all` to create build for both
 - `eas build --platform ios` or `eas build --platform android` for individual builds
 - Run `eas build -p android --profile preview2` which has been configured in `eas.json` to generate `apk` build
+
+# Deployments and Storing Environment variables
+
+Expo has introduced Release Channels to manage environment variables to be switched between different local, staging and production builds
+Refer the [article](https://alxmrtnz.com/thoughts/2019/03/12/environment-variables-and-workflow-in-expo.html) to get to know how were release channels setup and replaced the `.env` file which react uses as default.
+
+## Creating and Uploading an Initial Build
+
+To create build for staging / production we need to add additional params to define the release channel configured for the build.
+
+This can be achieved by
+
+```
+eas build -p android --profile preview2
+```
+
+or
+
+```
+eas build -p ios --profile preview2
+```
+
+## Publishing Updates to the Uploaded Build
+
+Whenever you do want to publish updates, you can then run:
+
+```
+expo publish --release-channel staging
+```
+
+## App Store/Google Play (“production”)
+
+When you want to go live, building and publishing is just like that of the staging environment, however you designate your release channel as `prod`:
+
+### Building binary for upload:
+
+```
+expo build:ios --release-channel prod
+```
+
+or
+
+```
+expo build:android --release-channel prod
+```
+
+Publishing updates:
+
+```
+expo publish --release-channel prod
+```

@@ -1,6 +1,8 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import { Authentication } from '../common/Enums';
+import getEnvVars from '../environment';
+const { apiUrl } = getEnvVars();
 
 export const ApiCall = (baseURL: string, headers?: any) => {
   const instance = axios.create({
@@ -37,7 +39,7 @@ export const TiffinPlanetAPI = (additionalHeaders?: any) => {
     'Content-Type': 'application/json',
   };
   // TODO: Need to read this from ENV File
-  return ApiCall('https://staging-tiffin-planet-ws.herokuapp.com', headers);
+  return ApiCall(apiUrl, headers);
 };
 
 export const secureStorageSave = async (key: string, value: string) => {

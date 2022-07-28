@@ -14,7 +14,6 @@ import { UserService } from '../../services/UserService';
 
 export default function RegisterAndSignIn({ route, navigation }: any) {
   const { registrationPageType } = route.params;
-  // TODO: store the logged in user in the store
   const dispatch = useDispatch();
   const [name, setName] = useState<string>();
   const [email, setEmail] = useState<string>();
@@ -73,6 +72,7 @@ export default function RegisterAndSignIn({ route, navigation }: any) {
       await RegisterService.loginUser(changeNullToUndefined(email)!, password);
       setDisableSubmitBtn(false);
 
+      // Parse the JWT to check for the UserType before navigating to correct screen
       await fetchJwtTokenAndNavigateUser();
     } catch (error: any) {
       setDisableSubmitBtn(false);

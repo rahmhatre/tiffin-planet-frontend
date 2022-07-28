@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Image, View, ScrollView } from 'react-native';
 import { ActivityIndicator, Button, Text } from 'react-native-paper';
+import getEnvVars from '../../environment';
+const { expoClientId, iosClientId, androidClientId } = getEnvVars();
 
 // Authentication
 import * as Google from 'expo-auth-session/providers/google';
@@ -41,9 +43,9 @@ export default function HomeScreen({ navigation }: any) {
 
   // TODO: Below client Ids should come from config, env or secrets
   const [request, response, promptAsync] = Google.useAuthRequest({
-    expoClientId: '803273470355-4itbc5q7v5584m0f62bou7n1r6u9e8ec.apps.googleusercontent.com',
-    iosClientId: '803273470355-8k62puqfa2q97ikif8d7a2bmhg5kjq1m.apps.googleusercontent.com',
-    androidClientId: '803273470355-odb3go70h65e4cqab8rifec63ufe9ki9.apps.googleusercontent.com',
+    expoClientId: expoClientId,
+    iosClientId: iosClientId,
+    androidClientId: androidClientId,
   });
 
   // When google returns the callback response

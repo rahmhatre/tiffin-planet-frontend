@@ -13,11 +13,16 @@
     "preview2": {
       "android": {
         "buildType": "apk"
-      }
+      },
+      "releaseChannel": "staging"
     },
-    "production": {}
+    "production": {
+      "releaseChannel": "prod"
+    }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "releaseChannel": "prod"
+    }
   }
 }
