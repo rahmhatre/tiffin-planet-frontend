@@ -1,4 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import * as Notifications from 'expo-notifications';
 import { StyleSheet, Image, View, ScrollView } from 'react-native';
 import { ActivityIndicator, Button, Text } from 'react-native-paper';
 import getEnvVars from '../../environment';
@@ -20,8 +21,17 @@ import { TiffinPlanetAccessToken, TiffinPlanetUserSchema } from '../../common/Ty
 import { UserService } from '../../services/UserService';
 import { updateTiffinPlanetLoggedInUserState } from '../../common/redux/tiffinPlanetUser/tiffinPlanetLoggedInUserStateSlice';
 import { TiffinPlanetLoggedInUserStateSelector } from '../../common/redux/selectors';
+import { registerForPushNotificationsAsync } from '../../common/notifications/notifications';
 
 WebBrowser.maybeCompleteAuthSession();
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 export default function HomeScreen({ navigation }: any) {
   const [googleAccessToken, setGoogleAccessToken] = useState<string>();
@@ -29,6 +39,27 @@ export default function HomeScreen({ navigation }: any) {
   const [loading, setLoading] = useState<boolean>(false);
   const tiffinPlanetLoggedInUser: TiffinPlanetUserSchema = useSelector(TiffinPlanetLoggedInUserStateSelector);
   const dispatch = useDispatch();
+
+  // Notifications
+  const [expoPushToken, setExpoPushToken] = useState<string>();
+  useEffect(() => {
+    registerForPushNotificationsAsync().then((token) => {
+      setExpoPushToken(token);
+    });
+  }, []);
+
+  // TODO: Remove logic to send
+  // Dummy Notifications
+  // const schedulePushNotification = async () => {
+  //   await Notifications.scheduleNotificationAsync({
+  //     content: {
+  //       title: 'Coadjute 🎈',
+  //       body: 'Here is the notification body',
+  //       data: { data: 'Meta Data' },
+  //     },
+  //     trigger: { seconds: 2 },
+  //   });
+  // };
 
   useEffect(() => {
     // If logged In user identity found then navigate to orders page
@@ -64,7 +95,7 @@ export default function HomeScreen({ navigation }: any) {
       if (googleAccessToken) {
         // Get info from google
         const googleInfoResponse = await getMyGoogleInfoApi(googleAccessToken).catch((error: any) => {
-          console.log('🚀 ~ file: Login.tsx ~ line 59 ~ getUserData ~ error', error);
+          console.error('🚀 ~ file: Login.tsx ~ line 59 ~ getUserData ~ error', error);
         });
 
         // Response from Google
@@ -84,6 +115,13 @@ export default function HomeScreen({ navigation }: any) {
 
             // Decode the JWT token
             var decodedToken: TiffinPlanetAccessToken = jwtDecode(accessToken!);
+
+            // Update the User with expo notification token if present
+            if (expoPushToken) {
+              await UserService.patchUserById(decodedToken?.userId, {
+                expoPushNotificationToken: expoPushToken,
+              });
+            }
 
             // Get logged In user by Id
             const userResponse: TiffinPlanetUserSchema = await UserService.getUserById(decodedToken?.userId);
@@ -161,6 +199,17 @@ export default function HomeScreen({ navigation }: any) {
               Sign Up
             </Button>
           </View>
+          {/* <View style={{ marginTop: 90 }}>
+            <Text>Expo Token: {expoPushToken}</Text>
+            <Button
+              mode="text"
+              onPress={() => {
+                schedulePushNotification();
+              }}
+            >
+              Send Notification
+            </Button>
+          </View> */}
         </>
       )}
     </ScrollView>

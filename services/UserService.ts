@@ -16,7 +16,15 @@ async function getUserById(userId: string) {
   return data;
 }
 
+async function patchUserById(userId: string, payload = {}) {
+  const authHeader = await getAuthTokenAsHeader();
+  const url = `${baseURL}/${userId}`;
+  const { data } = await TiffinPlanetAPI(authHeader).patch(url, payload);
+  return data;
+}
+
 export const UserService = {
   getUsers,
   getUserById,
+  patchUserById,
 };

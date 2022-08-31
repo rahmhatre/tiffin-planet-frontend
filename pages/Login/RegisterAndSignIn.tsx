@@ -4,6 +4,7 @@ import { View, StyleSheet, Image, ScrollView, Alert } from 'react-native';
 import { Button, Snackbar, Text, TextInput } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { Authentication, RegistrationPageType, UserType } from '../../common/Enums';
+import { registerForPushNotificationsAsync } from '../../common/notifications/notifications';
 import { updateTiffinPlanetLoggedInUserState } from '../../common/redux/tiffinPlanetUser/tiffinPlanetLoggedInUserStateSlice';
 import { routes } from '../../common/routes/routes';
 import { TiffinPlanetAccessToken, TiffinPlanetUserSchema } from '../../common/Types';
@@ -21,6 +22,14 @@ export default function RegisterAndSignIn({ route, navigation }: any) {
   const [confirmPassword, setConfirmPassword] = useState<string>();
   const [hidePassword, setHidePassword] = useState<boolean>(true);
   const [disableSubmitBtn, setDisableSubmitBtn] = useState<boolean>(false);
+
+  // Notifications
+  const [expoPushToken, setExpoPushToken] = useState<string>();
+  useEffect(() => {
+    registerForPushNotificationsAsync().then((token) => {
+      setExpoPushToken(token);
+    });
+  }, []);
 
   useEffect(() => {
     navigation.setOptions({
@@ -42,6 +51,13 @@ export default function RegisterAndSignIn({ route, navigation }: any) {
 
     // Decode the JWT token
     var decodedToken: TiffinPlanetAccessToken = jwtDecode(accessToken!);
+
+    // Update the User with expo notification token if present
+    if (expoPushToken) {
+      await UserService.patchUserById(decodedToken?.userId, {
+        expoPushNotificationToken: expoPushToken,
+      });
+    }
 
     // Get logged In user by Id
     const userResponse: TiffinPlanetUserSchema = await UserService.getUserById(decodedToken?.userId);

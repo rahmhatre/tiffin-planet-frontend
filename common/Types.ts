@@ -20,6 +20,7 @@ export interface TiffinPlanetUserSchema {
   status: string;
   updatedAt: string;
   userType: UserType;
+  expoPushNotificationToken?: string;
 }
 
 export interface TiffinPlanetOrderSchema {
