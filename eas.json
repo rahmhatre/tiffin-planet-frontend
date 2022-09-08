@@ -1,6 +1,6 @@
 {
   "cli": {
-    "version": ">= 0.54.1"
+    "version": ">= 2.1.0"
   },
   "build": {
     "development": {
@@ -21,8 +21,6 @@
     }
   },
   "submit": {
-    "production": {
-      "releaseChannel": "prod"
-    }
+    "production": {}
   }
 }

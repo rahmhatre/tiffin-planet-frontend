@@ -5,6 +5,6 @@
   "minify": false,
   "urlRandomness": "gx-nv9",
   "https": false,
-  "scheme": "exp+tiffinplanet",
+  "scheme": "com.rahulmhatre.tiffinplanet",
   "devClient": false
 }

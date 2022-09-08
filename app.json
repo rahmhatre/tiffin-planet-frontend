@@ -15,7 +15,9 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "bundleIdentifier": "com.rahulmhatre.tiffinplanet",
       "buildNumber": "1.0.0",
@@ -34,6 +36,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "c1bb5ab6-0d98-4495-bcf6-16bd9bbf8da9"
+      }
     }
   }
 }
