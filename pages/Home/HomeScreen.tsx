@@ -142,6 +142,8 @@ export default function HomeScreen({ navigation }: any) {
             }
           } catch (error: any) {
             console.error('🚀 ~ file: HomeScreen.tsx ~ line 101 ~ loginToTiffinPlanetWithGoogleUserInfo ~ error', error);
+          } finally {
+            setLoading(false);
           }
         }
       }

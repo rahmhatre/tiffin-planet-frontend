@@ -1,7 +1,7 @@
 import jwtDecode from 'jwt-decode';
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Image, ScrollView, Alert } from 'react-native';
-import { Button, Snackbar, Text, TextInput } from 'react-native-paper';
+import { ActivityIndicator, Button, Snackbar, Text, TextInput } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import { Authentication, RegistrationPageType, UserType } from '../../common/Enums';
 import { registerForPushNotificationsAsync } from '../../common/notifications/notifications';
@@ -22,6 +22,7 @@ export default function RegisterAndSignIn({ route, navigation }: any) {
   const [confirmPassword, setConfirmPassword] = useState<string>();
   const [hidePassword, setHidePassword] = useState<boolean>(true);
   const [disableSubmitBtn, setDisableSubmitBtn] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   // Notifications
   const [expoPushToken, setExpoPushToken] = useState<string>();
@@ -86,6 +87,9 @@ export default function RegisterAndSignIn({ route, navigation }: any) {
     }
 
     try {
+      // Set Loading
+      setLoading(true);
+
       // Login with User Credential Flow
       await RegisterService.loginUser(changeNullToUndefined(email)!, password);
       setDisableSubmitBtn(false);
@@ -96,6 +100,8 @@ export default function RegisterAndSignIn({ route, navigation }: any) {
       setDisableSubmitBtn(false);
       console.error('🚀 ~ file: Register.tsx ~ line 37 ~ signInUser ~ error', error);
       Alert.alert(`Unable to sign in, please check the details again or contact support.`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -126,6 +132,9 @@ export default function RegisterAndSignIn({ route, navigation }: any) {
     };
 
     try {
+      // Set Loading
+      setLoading(true);
+
       await RegisterService.registerUser(userPayload);
       setDisableSubmitBtn(false);
 
@@ -134,61 +143,70 @@ export default function RegisterAndSignIn({ route, navigation }: any) {
       setDisableSubmitBtn(false);
       console.error('🚀 ~ file: Register.tsx ~ line 37 ~ createUser ~ error', error);
       Alert.alert(`Unable to register, please check the details again or contact support.`);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <View style={{ paddingBottom: 20 }}>
-        <Image style={styles.companyLogo} source={require('./../../assets/tiffin_planet.png')} />
-      </View>
-      {/* Name */}
-      {registrationPageType === RegistrationPageType.SIGN_UP ? (
-        <View style={{ paddingBottom: 10 }}>
-          <TextInput mode="outlined" label="Name" autoComplete="name" textContentType="name" onChangeText={setName} value={name} />
-        </View>
-      ) : null}
-      {/* Email */}
-      <View style={{ paddingBottom: 10 }}>
-        <TextInput mode="outlined" label="Email" autoComplete="email" textContentType="emailAddress" onChangeText={setEmail} value={email} />
-      </View>
-      <View style={{ paddingBottom: 10 }}>
-        <TextInput
-          mode="outlined"
-          label="Password"
-          secureTextEntry={hidePassword}
-          right={<TextInput.Icon name={hidePassword ? 'eye' : 'eye-off'} onPress={() => setHidePassword((prev) => !prev)} forceTextInputFocus={false} />}
-          autoComplete="password"
-          textContentType="password"
-          onChangeText={setPassword}
-          value={password}
-        />
-      </View>
-      {registrationPageType === RegistrationPageType.SIGN_UP ? (
-        <View style={{ paddingBottom: 30 }}>
-          <TextInput
-            mode="outlined"
-            label="Confirm Password"
-            secureTextEntry={hidePassword}
-            right={<TextInput.Icon name={hidePassword ? 'eye' : 'eye-off'} onPress={() => setHidePassword((prev) => !prev)} forceTextInputFocus={false} />}
-            autoComplete="password"
-            textContentType="password"
-            onChangeText={setConfirmPassword}
-            value={confirmPassword}
-          />
-        </View>
-      ) : null}
-      <View style={styles.signUpButtons}>
-        <Button style={styles.buttonSize} mode="contained" disabled={disableSubmitBtn} onPress={signUpOrSignInUser}>
-          {registrationPageType === RegistrationPageType.SIGN_UP ? 'Sign Up' : 'Sign In'}
-        </Button>
-      </View>
+      {loading ? (
+        <ActivityIndicator animating={true} size="large" color={'purple'} />
+      ) : (
+        <>
+          <View style={{ paddingBottom: 20 }}>
+            <Image style={styles.companyLogo} source={require('./../../assets/tiffin_planet.png')} />
+          </View>
+          {/* Name */}
+          {registrationPageType === RegistrationPageType.SIGN_UP ? (
+            <View style={{ paddingBottom: 10 }}>
+              <TextInput mode="outlined" label="Name" autoComplete="name" textContentType="name" onChangeText={setName} value={name} />
+            </View>
+          ) : null}
+          {/* Email */}
+          <View style={{ paddingBottom: 10 }}>
+            <TextInput mode="outlined" label="Email" autoComplete="email" textContentType="emailAddress" onChangeText={setEmail} value={email} />
+          </View>
+          <View style={{ paddingBottom: 10 }}>
+            <TextInput
+              mode="outlined"
+              label="Password"
+              secureTextEntry={hidePassword}
+              right={<TextInput.Icon name={hidePassword ? 'eye' : 'eye-off'} onPress={() => setHidePassword((prev) => !prev)} forceTextInputFocus={false} />}
+              autoComplete="password"
+              textContentType="password"
+              onChangeText={setPassword}
+              value={password}
+            />
+          </View>
+          {registrationPageType === RegistrationPageType.SIGN_UP ? (
+            <View style={{ paddingBottom: 30 }}>
+              <TextInput
+                mode="outlined"
+                label="Confirm Password"
+                secureTextEntry={hidePassword}
+                right={<TextInput.Icon name={hidePassword ? 'eye' : 'eye-off'} onPress={() => setHidePassword((prev) => !prev)} forceTextInputFocus={false} />}
+                autoComplete="password"
+                textContentType="password"
+                onChangeText={setConfirmPassword}
+                value={confirmPassword}
+              />
+            </View>
+          ) : null}
+          <View style={styles.signUpButtons}>
+            <Button style={styles.buttonSize} mode="contained" disabled={disableSubmitBtn} onPress={signUpOrSignInUser}>
+              {registrationPageType === RegistrationPageType.SIGN_UP ? 'Sign Up' : 'Sign In'}
+            </Button>
+          </View>
+        </>
+      )}
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 20,
     justifyContent: 'center',
     alignContent: 'center',
