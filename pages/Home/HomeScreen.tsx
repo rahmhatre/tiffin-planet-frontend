@@ -43,9 +43,11 @@ export default function HomeScreen({ navigation }: any) {
   // Notifications
   const [expoPushToken, setExpoPushToken] = useState<string>();
   useEffect(() => {
-    registerForPushNotificationsAsync().then((token) => {
-      setExpoPushToken(token);
-    });
+    if (!expoPushToken) {
+      registerForPushNotificationsAsync().then((token) => {
+        setExpoPushToken(token);
+      });
+    }
   }, []);
 
   // TODO: Remove logic to send
@@ -93,6 +95,9 @@ export default function HomeScreen({ navigation }: any) {
   useEffect(() => {
     const loginToTiffinPlanetWithGoogleUserInfo = async () => {
       if (googleAccessToken) {
+        // Set Loading
+        setLoading(true);
+
         // Get info from google
         const googleInfoResponse = await getMyGoogleInfoApi(googleAccessToken).catch((error: any) => {
           console.error('🚀 ~ file: Login.tsx ~ line 59 ~ getUserData ~ error', error);
@@ -168,7 +173,7 @@ export default function HomeScreen({ navigation }: any) {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {loading ? (
-        <ActivityIndicator animating={true} color={'purple'} />
+        <ActivityIndicator animating={true} size="large" color={'purple'} />
       ) : (
         <>
           <View style={{ paddingBottom: 20 }}>

@@ -26,9 +26,11 @@ export default function RegisterAndSignIn({ route, navigation }: any) {
   // Notifications
   const [expoPushToken, setExpoPushToken] = useState<string>();
   useEffect(() => {
-    registerForPushNotificationsAsync().then((token) => {
-      setExpoPushToken(token);
-    });
+    if (!expoPushToken) {
+      registerForPushNotificationsAsync().then((token) => {
+        setExpoPushToken(token);
+      });
+    }
   }, []);
 
   useEffect(() => {
