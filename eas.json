@@ -14,10 +14,10 @@
       "android": {
         "buildType": "apk"
       },
-      "releaseChannel": "staging"
+      "channel": "staging"
     },
     "production": {
-      "releaseChannel": "prod"
+      "channel": "prod"
     }
   },
   "submit": {
