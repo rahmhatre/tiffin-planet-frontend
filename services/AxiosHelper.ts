@@ -50,8 +50,6 @@ export const getValueFromSecureStorage = async (key: string) => {
   let result = await SecureStore.getItemAsync(key);
   if (result) {
     return result;
-  } else {
-    alert('Unable to find access token, please relogin again.');
   }
 };
 

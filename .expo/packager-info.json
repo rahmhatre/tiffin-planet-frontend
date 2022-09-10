@@ -1,10 +1,10 @@
 {
   "devToolsPort": 19002,
-  "expoServerPort": null,
+  "expoServerPort": 19000,
   "packagerPort": 19000,
   "expoServerNgrokUrl": "https://gx-nv9.rahmhatre.tiffin-planet-frontend.exp.direct",
   "packagerNgrokUrl": "https://gx-nv9.rahmhatre.tiffin-planet-frontend.exp.direct",
-  "ngrokPid": 21312,
+  "ngrokPid": 50112,
   "packagerPid": null,
   "webpackServerPort": null
 }

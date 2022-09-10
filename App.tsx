@@ -30,6 +30,10 @@ export default function App() {
   useEffect(() => {
     const getAccessToken = async () => {
       const accessToken = await getValueFromSecureStorage(Authentication.Authorization);
+      // Return if no access token is found stored in the secure storage of the phone
+      if (!accessToken) {
+        return;
+      }
       // Decode the JWT token
       var decodedToken: TiffinPlanetAccessToken = jwtDecode(accessToken!);
       // Get the token exp in datetime format

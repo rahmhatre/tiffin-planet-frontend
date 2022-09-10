@@ -3,7 +3,7 @@
 ## Run app locally
 
 - Install the node modules by `yarn install`
-- To start the project run `npx run start` or `yarn start`
+- To start the project run `npx expo start` or `yarn tunnel`
 - Please set the `.env` file with the required clientIds to enable login with google for iOS / Android and Expo (Local Debugging)
 
 ## How to deploy to App Store and Google Play Store
