@@ -13,11 +13,10 @@
       "backgroundColor": "#ffffff"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/c1bb5ab6-0d98-4495-bcf6-16bd9bbf8da9"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "bundleIdentifier": "com.rahulmhatre.tiffinplanet",
       "buildNumber": "1.0.0",
@@ -28,6 +27,7 @@
     },
     "android": {
       "package": "com.rahulmhatre.tiffinplanet",
+      "googleServicesFile": "./google-services.json",
       "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -41,6 +41,22 @@
       "eas": {
         "projectId": "c1bb5ab6-0d98-4495-bcf6-16bd9bbf8da9"
       }
+    },
+    "plugins": ["sentry-expo"],
+    "hooks": {
+      "postPublish": [
+        {
+          "file": "sentry-expo/upload-sourcemaps",
+          "config": {
+            "organization": "rahul-ds",
+            "project": "tiffin-planet",
+            "authToken": "4e18e246e0b141c3b31253282b787600a86795054bae4349a265251598b3a034"
+          }
+        }
+      ]
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
     }
   }
 }

@@ -22,6 +22,7 @@ import { UserService } from '../../services/UserService';
 import { updateTiffinPlanetLoggedInUserState } from '../../common/redux/tiffinPlanetUser/tiffinPlanetLoggedInUserStateSlice';
 import { TiffinPlanetLoggedInUserStateSelector } from '../../common/redux/selectors';
 import { registerForPushNotificationsAsync } from '../../common/notifications/notifications';
+import * as Sentry from 'sentry-expo';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -101,11 +102,13 @@ export default function HomeScreen({ navigation }: any) {
         // Get info from google
         const googleInfoResponse = await getMyGoogleInfoApi(googleAccessToken).catch((error: any) => {
           console.error('🚀 ~ file: Login.tsx ~ line 59 ~ getUserData ~ error', error);
+          Sentry.Native.captureException(error);
         });
 
         // Response from Google
         if (googleInfoResponse) {
-          console.log('🚀 ~ file: HomeScreen.tsx ~ line 72 ~ loginToTiffinPlanetWithGoogleUserInfo ~ googleInfoResponse', googleInfoResponse);
+          // Sentry.Native.captureMessage('google response found');
+          // console.log('🚀 ~ file: HomeScreen.tsx ~ line 72 ~ loginToTiffinPlanetWithGoogleUserInfo ~ googleInfoResponse', googleInfoResponse);
 
           // Save the Google Response in the store
           dispatch(updateGoogleLoggedInUserStateSlice(googleInfoResponse));
@@ -142,6 +145,7 @@ export default function HomeScreen({ navigation }: any) {
             }
           } catch (error: any) {
             console.error('🚀 ~ file: HomeScreen.tsx ~ line 101 ~ loginToTiffinPlanetWithGoogleUserInfo ~ error', error);
+            Sentry.Native.captureException(error);
           } finally {
             setLoading(false);
           }

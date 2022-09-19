@@ -18,7 +18,7 @@
 - To configure the app for ios / android run `eas build:configure`
 - Run `eas build --platform all` to create build for both
 - `eas build --platform ios` or `eas build --platform android` for individual builds
-- Run `eas build -p android --profile preview2` which has been configured in `eas.json` to generate `apk` build
+- Run `eas build -p android --profile preview` which has been configured in `eas.json` to generate `apk` build
 
 # Deployments and Storing Environment variables
 
@@ -32,13 +32,13 @@ To create build for staging / production we need to add additional params to def
 This can be achieved by
 
 ```
-eas build -p android --profile preview2
+eas build -p android --profile preview
 ```
 
 or
 
 ```
-eas build -p ios --profile preview2
+eas build -p ios --profile preview
 ```
 
 ## Publishing Updates to the Uploaded Build

@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "803273470355",
+    "project_id": "tiffin-planet-354121",
+    "storage_bucket": "tiffin-planet-354121.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:803273470355:android:c19f3119a1e2b788763866",
+        "android_client_info": {
+          "package_name": "com.rahulmhatre.tiffinplanet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "803273470355-4itbc5q7v5584m0f62bou7n1r6u9e8ec.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZBrZVdguuhP3ZNJdcG0LEKJVnVmXHQjQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "803273470355-4itbc5q7v5584m0f62bou7n1r6u9e8ec.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "803273470355-8k62puqfa2q97ikif8d7a2bmhg5kjq1m.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.rahulmhatre.tiffinplanet"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

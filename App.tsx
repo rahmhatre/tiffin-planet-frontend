@@ -15,6 +15,14 @@ import { Authentication } from './common/Enums';
 import jwtDecode from 'jwt-decode';
 import { TiffinPlanetAccessToken } from './common/Types';
 import moment from 'moment';
+import * as Sentry from 'sentry-expo';
+
+Sentry.init({
+  dsn: 'https://8365eea9e49842e88645e12ae97f0cc1@o1178056.ingest.sentry.io/6755248',
+  enableInExpoDevelopment: true,
+  debug: true, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
+});
+
 // import {
 //   DarkTheme as PaperDarkTheme,
 //   DefaultTheme as PaperDefaultTheme,

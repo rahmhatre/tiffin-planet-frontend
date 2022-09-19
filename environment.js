@@ -1,4 +1,5 @@
 import Constants from 'expo-constants';
+import * as Updates from 'expo-updates';
 import { Platform } from 'react-native';
 // const localhost = Platform.OS === 'ios' ? 'localhost:3000' : '10.0.2.2:8080';
 
@@ -23,7 +24,7 @@ const ENV = {
   },
 };
 
-const getEnvVars = (env = Constants.manifest.releaseChannel) => {
+const getEnvVars = (env = Updates.channel) => {
   // What is __DEV__ ?
   // This variable is set to true when react-native is running in Dev mode.
   // __DEV__ is true when run locally, but false when published.

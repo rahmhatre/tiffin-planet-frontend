@@ -8,17 +8,15 @@
       "distribution": "internal"
     },
     "preview": {
-      "distribution": "internal"
-    },
-    "preview2": {
+      "node": "16.16.0",
       "android": {
         "buildType": "apk"
       },
-      "releaseChannel": "staging",
+      "channel": "staging",
       "distribution": "internal"
     },
     "production": {
-      "releaseChannel": "prod"
+      "channel": "prod"
     }
   },
   "submit": {
